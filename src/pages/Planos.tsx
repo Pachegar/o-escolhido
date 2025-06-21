@@ -8,7 +8,7 @@ import { Progress } from '@/components/ui/progress';
 const planos = [
   {
     name: 'Peixe',
-    price: 'R$ 48,90/mês',
+    price: 'R$ 49,90/mês',
     trackings: 60,
     features: [
       '60 rastreamentos por mês',
@@ -46,7 +46,7 @@ const planos = [
       '500 rastreamentos por mês',
       'Subdomínio personalizado na página de rastreio',
       'Relatório e análise de dados enviados mensalmente',
-      'Oferte OrderBump/UpSell/DownSell na página de rastreio'
+      'Oferte OrderBump/UpSell/DownSell na página de rastreio',
       'Automação de envio de rastreio pelo e-mail para o cliente',
       'Acesso exclusivo ao grupo networking golfinho'
     ],
@@ -147,7 +147,7 @@ const Planos = () => {
               <CardHeader className="text-center">
                 <div className="text-4xl mb-2">
                   {plano.name === 'Peixe' && '🐟'}
-                  {plano.name === 'Cavalo-marinho' && '🦄'}
+                  {plano.name === 'Polvo' && '🐙'}
                   {plano.name === 'Golfinho' && '🐬'}
                   {plano.name === 'Tubarão' && '🦈'}
                 </div>
