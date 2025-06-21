@@ -1,97 +1,97 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
-import { ProtectedRoute } from "./components/ProtectedRoute";
-import Index from "./pages/Index";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import Rastreamentos from "./pages/Rastreamentos";
-import CriarRastreamento from "./pages/CriarRastreamento";
-import EditarRastreamento from "./pages/EditarRastreamento";
-import DetalhesRastreamento from "./pages/DetalhesRastreamento";
-import ModelosEntrega from "./pages/ModelosEntrega";
-import Configuracoes from "./pages/Configuracoes";
-import Planos from "./pages/Planos";
-import RastreamentoPublico from "./pages/RastreamentoPublico";
-import NotFound from "./pages/NotFound";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { Toaster } from '@/components/ui/sonner';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+// Pages
+import Index from '@/pages/Index';
+import Login from '@/pages/Login';
+import Register from '@/pages/Register';
+import Dashboard from '@/pages/Dashboard';
+import Rastreamentos from '@/pages/Rastreamentos';
+import CriarRastreamento from '@/pages/CriarRastreamento';
+import EditarRastreamento from '@/pages/EditarRastreamento';
+import DetalhesRastreamento from '@/pages/DetalhesRastreamento';
+import ModelosEntrega from '@/pages/ModelosEntrega';
+import Indicacoes from '@/pages/Indicacoes';
+import Configuracoes from '@/pages/Configuracoes';
+import Planos from '@/pages/Planos';
+import RastreamentoPublico from '@/pages/RastreamentoPublico';
+import NotFound from '@/pages/NotFound';
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
+const queryClient = new QueryClient();
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <BrowserRouter>
-          <div className="min-h-screen bg-background text-foreground">
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/registro" element={<Register />} />
-              <Route path="/r/:slug" element={<RastreamentoPublico />} />
-              
-              {/* Protected Routes */}
-              <Route path="/dashboard" element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="/rastreamentos" element={
-                <ProtectedRoute>
-                  <Rastreamentos />
-                </ProtectedRoute>
-              } />
-              <Route path="/rastreamentos/criar" element={
-                <ProtectedRoute>
-                  <CriarRastreamento />
-                </ProtectedRoute>
-              } />
-              <Route path="/rastreamentos/:id/editar" element={
-                <ProtectedRoute>
-                  <EditarRastreamento />
-                </ProtectedRoute>
-              } />
-              <Route path="/rastreamentos/:id" element={
-                <ProtectedRoute>
-                  <DetalhesRastreamento />
-                </ProtectedRoute>
-              } />
-              <Route path="/modelos" element={
-                <ProtectedRoute>
-                  <ModelosEntrega />
-                </ProtectedRoute>
-              } />
-              <Route path="/configuracoes" element={
-                <ProtectedRoute>
-                  <Configuracoes />
-                </ProtectedRoute>
-              } />
-              <Route path="/planos" element={
-                <ProtectedRoute>
-                  <Planos />
-                </ProtectedRoute>
-              } />
-              
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </div>
-        </BrowserRouter>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/cadastro" element={<Register />} />
+            
+            {/* Protected Routes */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/rastreamentos" element={
+              <ProtectedRoute>
+                <Rastreamentos />
+              </ProtectedRoute>
+            } />
+            <Route path="/rastreamentos/criar" element={
+              <ProtectedRoute>
+                <CriarRastreamento />
+              </ProtectedRoute>
+            } />
+            <Route path="/rastreamentos/:id/editar" element={
+              <ProtectedRoute>
+                <EditarRastreamento />
+              </ProtectedRoute>
+            } />
+            <Route path="/rastreamentos/:id" element={
+              <ProtectedRoute>
+                <DetalhesRastreamento />
+              </ProtectedRoute>
+            } />
+            <Route path="/modelos" element={
+              <ProtectedRoute>
+                <ModelosEntrega />
+              </ProtectedRoute>
+            } />
+            <Route path="/indicacoes" element={
+              <ProtectedRoute>
+                <Indicacoes />
+              </ProtectedRoute>
+            } />
+            <Route path="/configuracoes" element={
+              <ProtectedRoute>
+                <Configuracoes />
+              </ProtectedRoute>
+            } />
+            <Route path="/planos" element={
+              <ProtectedRoute>
+                <Planos />
+              </ProtectedRoute>
+            } />
+            
+            {/* Public Routes */}
+            <Route path="/r/:slug" element={<RastreamentoPublico />} />
+            
+            {/* 404 */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <Toaster />
+        </Router>
       </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+    </QueryClientProvider>
+  );
+}
 
 export default App;
