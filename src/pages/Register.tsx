@@ -23,7 +23,7 @@ const Register = () => {
     if (password !== confirmPassword) {
       toast({
         title: "Erro",
-        description: "As senhas não coincidem",
+        description: "As senhas não coincidem. Digite a mesma senha nos dois campos.",
         variant: "destructive",
       });
       return;
@@ -32,7 +32,7 @@ const Register = () => {
     if (password.length < 6) {
       toast({
         title: "Erro",
-        description: "A senha deve ter pelo menos 6 caracteres",
+        description: "A senha deve ter pelo menos 6 caracteres.",
         variant: "destructive",
       });
       return;
@@ -44,17 +44,31 @@ const Register = () => {
 
     if (error) {
       console.error('Signup error:', error);
+      
+      let errorMessage = 'Erro no cadastro';
+      
+      if (error.message === 'User already registered') {
+        errorMessage = 'Este email já está cadastrado. Tente fazer login ou use outro email.';
+      } else if (error.message.includes('Invalid email')) {
+        errorMessage = 'Email inválido. Verifique o formato do email.';
+      } else if (error.message.includes('Password')) {
+        errorMessage = 'Senha muito fraca. Use pelo menos 6 caracteres.';
+      } else if (error.message.includes('rate limit')) {
+        errorMessage = 'Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.';
+      } else {
+        errorMessage = `Erro: ${error.message}`;
+      }
+      
       toast({
         title: "Erro no cadastro",
-        description: error.message === 'User already registered' 
-          ? 'Este email já está cadastrado. Tente fazer login.'
-          : error.message,
+        description: errorMessage,
         variant: "destructive",
       });
     } else {
       toast({
-        title: "Conta criada com sucesso!",
-        description: "Verifique seu email para confirmar a conta antes de fazer login",
+        title: "Cadastro realizado com sucesso!",
+        description: "Um email de confirmação foi enviado para sua caixa de entrada. Clique no link no email para ativar sua conta antes de fazer login.",
+        duration: 8000,
       });
       navigate('/login');
     }

@@ -28,11 +28,17 @@ const Login = () => {
       let errorMessage = 'Erro no login';
       
       if (error.message === 'Invalid login credentials') {
-        errorMessage = 'Email ou senha incorretos. Verifique suas credenciais.';
+        errorMessage = 'Email ou senha incorretos. Verifique suas credenciais e tente novamente.';
       } else if (error.message === 'Email not confirmed') {
-        errorMessage = 'Email não confirmado. Verifique sua caixa de entrada.';
+        errorMessage = 'Email não confirmado. Verifique sua caixa de entrada e clique no link de confirmação antes de fazer login.';
+      } else if (error.message.includes('User not found')) {
+        errorMessage = 'Este email não está cadastrado. Faça seu cadastro primeiro.';
+      } else if (error.message.includes('Invalid email')) {
+        errorMessage = 'Email inválido. Verifique o formato do email.';
+      } else if (error.message.includes('Password')) {
+        errorMessage = 'Senha incorreta. Verifique sua senha e tente novamente.';
       } else {
-        errorMessage = error.message;
+        errorMessage = `Erro: ${error.message}`;
       }
       
       toast({
