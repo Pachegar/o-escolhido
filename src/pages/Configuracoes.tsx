@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
@@ -73,6 +74,12 @@ const Configuracoes = () => {
         hasMinLength
       }
     };
+  };
+
+  // Email validation function
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   const handleSubmit = async (section: string) => {
@@ -160,41 +167,63 @@ const Configuracoes = () => {
       return;
     }
 
-    setLoading(true);
-
-    const { error } = await updateEmail(accountSettings.newEmail);
-
-    if (error) {
+    if (!validateEmail(accountSettings.newEmail)) {
       toast({
-        title: "Erro ao alterar email",
-        description: error.message,
+        title: "Erro",
+        description: "Por favor, digite um endereço de email válido.",
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "Email sendo alterado!",
-        description: "Verifique sua caixa de entrada nos dois emails (atual e novo) para confirmar a alteração.",
-        duration: 10000,
-      });
-      setAccountSettings(prev => ({ ...prev, newEmail: '' }));
+      return;
     }
 
-    setLoading(false);
-  };
-
-  const handleCancelSubscription = () => {
-    const confirmed = window.confirm(
-      "Tem certeza que deseja cancelar sua assinatura? Você perderá acesso aos recursos premium ao final do período atual."
-    );
-
-    if (confirmed) {
-      // Here you would implement subscription cancellation
+    if (accountSettings.newEmail === user?.email) {
       toast({
-        title: "Assinatura cancelada",
-        description: "Sua assinatura foi cancelada. Você ainda terá acesso aos recursos premium até o final do período atual.",
+        title: "Erro",
+        description: "O novo email deve ser diferente do email atual.",
         variant: "destructive",
-        duration: 10000,
       });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { error } = await updateEmail(accountSettings.newEmail);
+
+      if (error) {
+        let errorMessage = "Erro desconhecido ao alterar email.";
+        
+        if (error.message.includes("already registered")) {
+          errorMessage = "Este email já está registrado em outra conta.";
+        } else if (error.message.includes("invalid")) {
+          errorMessage = "Endereço de email inválido.";
+        } else if (error.message.includes("rate limit")) {
+          errorMessage = "Muitas tentativas. Tente novamente em alguns minutos.";
+        } else {
+          errorMessage = error.message;
+        }
+
+        toast({
+          title: "Erro ao alterar email",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Confirmação de alteração de email enviada!",
+          description: "Foram enviados emails de confirmação para seu email atual e para o novo email. Você precisa confirmar a alteração em ambos os emails para que a mudança seja efetivada.",
+          duration: 12000,
+        });
+        setAccountSettings(prev => ({ ...prev, newEmail: '' }));
+      }
+    } catch (error: any) {
+      toast({
+        title: "Erro inesperado",
+        description: "Ocorreu um erro inesperado. Tente novamente mais tarde.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -331,7 +360,7 @@ const Configuracoes = () => {
 
             <Separator />
 
-            {/* Cancel Subscription */}
+            {/* Subscription Management */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium text-white">Assinatura</h3>
               <p className="text-sm text-muted-foreground">
@@ -343,13 +372,6 @@ const Configuracoes = () => {
                     💎 Gerenciar plano
                   </Button>
                 </Link>
-                <Button
-                  onClick={handleCancelSubscription}
-                  variant="destructive"
-                  className="hover-button"
-                >
-                  Cancelar assinatura
-                </Button>
               </div>
             </div>
           </CardContent>
@@ -574,6 +596,47 @@ const Configuracoes = () => {
                   💎 Ver planos
                 </Button>
               </Link>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Cancel Subscription - Moved to the end */}
+        <Card className="glass-card border-red-500/20">
+          <CardHeader>
+            <CardTitle className="text-white">Zona de Perigo</CardTitle>
+            <CardDescription>
+              Ações irreversíveis da sua conta
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-medium text-red-400 mb-2">Cancelar Assinatura</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Ao cancelar sua assinatura, você perderá acesso aos recursos premium ao final do período atual. Esta ação não pode ser desfeita.
+                </p>
+                <Button
+                  onClick={() => {
+                    const confirmed = window.confirm(
+                      "Tem certeza que deseja cancelar sua assinatura? Você perderá acesso aos recursos premium ao final do período atual."
+                    );
+
+                    if (confirmed) {
+                      // Here you would implement subscription cancellation
+                      toast({
+                        title: "Assinatura cancelada",
+                        description: "Sua assinatura foi cancelada. Você ainda terá acesso aos recursos premium até o final do período atual.",
+                        variant: "destructive",
+                        duration: 10000,
+                      });
+                    }
+                  }}
+                  variant="destructive"
+                  className="hover-button"
+                >
+                  Cancelar assinatura
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
