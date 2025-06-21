@@ -12,8 +12,8 @@ const planos = [
     trackings: 60,
     features: [
       '60 rastreamentos por mês',
-      'Páginas públicas básicas',
-      'Suporte por email',
+      'Páginas de rastreio básica',
+      'Suporte padrão',
       'Tom de voz neutro',
       'Acesso exclusivo ao grupo networking peixes'
     ],
@@ -22,9 +22,10 @@ const planos = [
   },
   {
     name: 'Cavalo-marinho',
-    price: 'R$ 97,90/mês',
+    price: 'R$ 97/mês',
     trackings: 200,
     features: [
+      'Todas as funcionalidades anteriores',
       '200 rastreamentos por mês',
       'Cores personalizadas na página de rastreio',
       'Logo da sua loja na página de rastreio',
@@ -38,14 +39,15 @@ const planos = [
   },
   {
     name: 'Golfinho',
-    price: 'R$ 49,90/mês',
+    price: 'R$ 197/mês',
     trackings: 500,
     features: [
+      'Todas as funcionalidades anteriores',
       '500 rastreamentos por mês',
       'Subdomínio personalizado na página de rastreio',
-      'Todas as funcionalidades anteriores',
-      'Analytics avançados enviadas por e-mail',
-      'Automação de envio de rastreio pelo e-mail',
+      'Relatório e análise de dados enviados mensalmente',
+      'Oferte OrderBump/UpSell/DownSell na página de rastreio'
+      'Automação de envio de rastreio pelo e-mail para o cliente',
       'Acesso exclusivo ao grupo networking golfinho'
     ],
     current: false,
@@ -53,12 +55,12 @@ const planos = [
   },
   {
     name: 'Tubarão',
-    price: 'R$ 99,90/mês',
+    price: 'R$ 397/mês',
     trackings: 'Ilimitado',
     features: [
+      'Todas as funcionalidades anteriores',
       'Rastreamentos ilimitados',
       'Domínio customizado',
-      'Todas as funcionalidades anteriores',
       'Suporte 24/7',
       'Gerente de conta dedicado',
       'Automação de envio de rastreio pelo WhatsApp',
