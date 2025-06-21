@@ -9,6 +9,50 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      delivery_models: {
+        Row: {
+          created_at: string | null
+          exact_delivery_days: number
+          id: string
+          is_system_default: boolean | null
+          name: string
+          niveis_utilizados: string[]
+          qtde_eventos: number
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          exact_delivery_days: number
+          id?: string
+          is_system_default?: boolean | null
+          name: string
+          niveis_utilizados: string[]
+          qtde_eventos: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          exact_delivery_days?: number
+          id?: string
+          is_system_default?: boolean | null
+          name?: string
+          niveis_utilizados?: string[]
+          qtde_eventos?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_models_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mensagens_eventos: {
         Row: {
           codigo_evento: string | null
@@ -54,6 +98,137 @@ export type Database = {
         }
         Relationships: []
       }
+      order_bumps: {
+        Row: {
+          created_at: string | null
+          id: string
+          original_price_1: number | null
+          original_price_2: number | null
+          original_price_3: number | null
+          product_image_url_1: string | null
+          product_image_url_2: string | null
+          product_image_url_3: string | null
+          product_link_1: string | null
+          product_link_2: string | null
+          product_link_3: string | null
+          product_name_1: string | null
+          product_name_2: string | null
+          product_name_3: string | null
+          promotional_price_1: number | null
+          promotional_price_2: number | null
+          promotional_price_3: number | null
+          section_subtitle: string | null
+          section_title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          original_price_1?: number | null
+          original_price_2?: number | null
+          original_price_3?: number | null
+          product_image_url_1?: string | null
+          product_image_url_2?: string | null
+          product_image_url_3?: string | null
+          product_link_1?: string | null
+          product_link_2?: string | null
+          product_link_3?: string | null
+          product_name_1?: string | null
+          product_name_2?: string | null
+          product_name_3?: string | null
+          promotional_price_1?: number | null
+          promotional_price_2?: number | null
+          promotional_price_3?: number | null
+          section_subtitle?: string | null
+          section_title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          original_price_1?: number | null
+          original_price_2?: number | null
+          original_price_3?: number | null
+          product_image_url_1?: string | null
+          product_image_url_2?: string | null
+          product_image_url_3?: string | null
+          product_link_1?: string | null
+          product_link_2?: string | null
+          product_link_3?: string | null
+          product_name_1?: string | null
+          product_name_2?: string | null
+          product_name_3?: string | null
+          promotional_price_1?: number | null
+          promotional_price_2?: number | null
+          promotional_price_3?: number | null
+          section_subtitle?: string | null
+          section_title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_bumps_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plans: {
+        Row: {
+          can_customize_logo: boolean | null
+          can_customize_tone: boolean | null
+          can_edit_messages: boolean | null
+          can_send_email_automation: boolean | null
+          can_send_whatsapp_automation: boolean | null
+          can_use_custom_domain: boolean | null
+          can_use_order_bump: boolean | null
+          can_use_subdomain: boolean | null
+          created_at: string | null
+          id: string
+          monthly_price: number
+          name: string
+          tracking_limit: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          can_customize_logo?: boolean | null
+          can_customize_tone?: boolean | null
+          can_edit_messages?: boolean | null
+          can_send_email_automation?: boolean | null
+          can_send_whatsapp_automation?: boolean | null
+          can_use_custom_domain?: boolean | null
+          can_use_order_bump?: boolean | null
+          can_use_subdomain?: boolean | null
+          created_at?: string | null
+          id?: string
+          monthly_price: number
+          name: string
+          tracking_limit?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          can_customize_logo?: boolean | null
+          can_customize_tone?: boolean | null
+          can_edit_messages?: boolean | null
+          can_send_email_automation?: boolean | null
+          can_send_whatsapp_automation?: boolean | null
+          can_use_custom_domain?: boolean | null
+          can_use_order_bump?: boolean | null
+          can_use_subdomain?: boolean | null
+          created_at?: string | null
+          id?: string
+          monthly_price?: number
+          name?: string
+          tracking_limit?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       rotas_por_estado: {
         Row: {
           cidade: string | null
@@ -78,15 +253,215 @@ export type Database = {
         }
         Relationships: []
       }
+      tracking_events: {
+        Row: {
+          created_at: string | null
+          event_level: number
+          event_text: string
+          id: string
+          location: string
+          order_in_timeline: number
+          simulated_datetime: string
+          tone_of_voice: string
+          tracking_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_level: number
+          event_text: string
+          id?: string
+          location: string
+          order_in_timeline: number
+          simulated_datetime: string
+          tone_of_voice: string
+          tracking_id: string
+        }
+        Update: {
+          created_at?: string | null
+          event_level?: number
+          event_text?: string
+          id?: string
+          location?: string
+          order_in_timeline?: number
+          simulated_datetime?: string
+          tone_of_voice?: string
+          tracking_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tracking_events_tracking_id_fkey"
+            columns: ["tracking_id"]
+            isOneToOne: false
+            referencedRelation: "trackings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trackings: {
+        Row: {
+          clicks: number | null
+          created_at: string | null
+          current_event_index: number | null
+          current_status: string | null
+          customer_name: string
+          delivery_model_id: string
+          destination_city: string
+          destination_state: string
+          id: string
+          is_completed: boolean | null
+          last_updated_at: string | null
+          public_link: string | null
+          total_events_generated: number | null
+          tracking_code: string
+          user_id: string
+        }
+        Insert: {
+          clicks?: number | null
+          created_at?: string | null
+          current_event_index?: number | null
+          current_status?: string | null
+          customer_name: string
+          delivery_model_id: string
+          destination_city: string
+          destination_state: string
+          id?: string
+          is_completed?: boolean | null
+          last_updated_at?: string | null
+          public_link?: string | null
+          total_events_generated?: number | null
+          tracking_code: string
+          user_id: string
+        }
+        Update: {
+          clicks?: number | null
+          created_at?: string | null
+          current_event_index?: number | null
+          current_status?: string | null
+          customer_name?: string
+          delivery_model_id?: string
+          destination_city?: string
+          destination_state?: string
+          id?: string
+          is_completed?: boolean | null
+          last_updated_at?: string | null
+          public_link?: string | null
+          total_events_generated?: number | null
+          tracking_code?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trackings_delivery_model_id_fkey"
+            columns: ["delivery_model_id"]
+            isOneToOne: false
+            referencedRelation: "delivery_models"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trackings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      users: {
+        Row: {
+          created_at: string | null
+          current_plan_id: string | null
+          custom_domain: string | null
+          custom_highlight_color: string | null
+          custom_logo_url: string | null
+          custom_subdomain: string | null
+          default_tone_of_voice: string | null
+          domain_request_status: string | null
+          email: string
+          id: string
+          referral_code: string | null
+          referral_credits: number | null
+          store_name: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          current_plan_id?: string | null
+          custom_domain?: string | null
+          custom_highlight_color?: string | null
+          custom_logo_url?: string | null
+          custom_subdomain?: string | null
+          default_tone_of_voice?: string | null
+          domain_request_status?: string | null
+          email: string
+          id: string
+          referral_code?: string | null
+          referral_credits?: number | null
+          store_name?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          current_plan_id?: string | null
+          custom_domain?: string | null
+          custom_highlight_color?: string | null
+          custom_logo_url?: string | null
+          custom_subdomain?: string | null
+          default_tone_of_voice?: string | null
+          domain_request_status?: string | null
+          email?: string
+          id?: string
+          referral_code?: string | null
+          referral_credits?: number | null
+          store_name?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "users_current_plan_id_fkey"
+            columns: ["current_plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_referral_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -201,6 +576,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
