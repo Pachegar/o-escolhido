@@ -50,7 +50,19 @@ const RastreamentoPublico = () => {
             concluido: false
           }
         ],
-        estimativa: '17 de Janeiro, 2024'
+        estimativa: '17 de Janeiro, 2024',
+        orderBump: [
+          {
+            id: '1',
+            nome: 'Camiseta Premium',
+            imagem: '/lovable-uploads/4452a6b2-830b-4a8e-a618-22a587835250.png',
+            precoOriginal: 89.90,
+            precoPromocional: 59.90,
+            ctaLink: 'https://loja.exemplo.com/camiseta',
+            titulo: 'Oferta Especial',
+            subtitulo: 'Aproveite enquanto seu pedido não chegou!'
+          }
+        ]
       };
     },
   });
@@ -106,7 +118,7 @@ const RastreamentoPublico = () => {
               ) : (
                 <img 
                   src="/lovable-uploads/eb8d8e3b-2f97-4b6a-b22a-6a8273307baa.png" 
-                  alt="Pachegar" 
+                  alt="RastreieTrack" 
                   className="h-10 w-auto"
                 />
               )}
@@ -125,17 +137,17 @@ const RastreamentoPublico = () => {
           <CardContent className="p-6">
             {/* Progress Section */}
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold mb-2">
+              <h2 className="text-2xl font-bold mb-2 text-white">
                 Olá, {rastreamento.cliente}! 👋
               </h2>
               <p className="text-muted-foreground mb-6">
-                Seu pedido está a caminho e chegará até <strong>{rastreamento.estimativa}</strong>
+                Seu pedido está a caminho e chegará até <strong className="text-white">{rastreamento.estimativa}</strong>
               </p>
               
               <div className="space-y-3">
                 <div className="flex justify-between text-sm">
-                  <span>Progresso da entrega</span>
-                  <span className="font-semibold">{rastreamento.progresso}%</span>
+                  <span className="text-white">Progresso da entrega</span>
+                  <span className="font-semibold text-white">{rastreamento.progresso}%</span>
                 </div>
                 <Progress value={rastreamento.progresso} className="h-4" />
               </div>
@@ -143,7 +155,7 @@ const RastreamentoPublico = () => {
 
             {/* Timeline */}
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold">Acompanhe seu pedido:</h3>
+              <h3 className="text-lg font-semibold text-white">Acompanhe seu pedido:</h3>
               
               <div className="space-y-4">
                 {rastreamento.eventos.map((evento, index) => (
@@ -164,7 +176,7 @@ const RastreamentoPublico = () => {
                     <div className="flex-1 pb-8">
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
                         <p className={`font-medium ${
-                          evento.concluido ? 'text-foreground' : 'text-muted-foreground'
+                          evento.concluido ? 'text-white' : 'text-muted-foreground'
                         }`}>
                           {evento.mensagem}
                         </p>
@@ -185,13 +197,60 @@ const RastreamentoPublico = () => {
           </CardContent>
         </Card>
 
+        {/* OrderBump Section */}
+        {rastreamento.orderBump && rastreamento.orderBump.length > 0 && (
+          <Card className="glass-card mb-6">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold text-white mb-4 text-center">
+                {rastreamento.orderBump[0].titulo}
+              </h3>
+              <p className="text-center text-muted-foreground mb-6">
+                {rastreamento.orderBump[0].subtitulo}
+              </p>
+              
+              <div className="grid gap-4">
+                {rastreamento.orderBump.map((produto) => (
+                  <div key={produto.id} className="flex items-center gap-4 p-4 bg-muted/20 rounded-lg">
+                    <img 
+                      src={produto.imagem} 
+                      alt={produto.nome}
+                      className="w-16 h-16 object-cover rounded-lg"
+                    />
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-white">{produto.nome}</h4>
+                      <div className="flex items-center gap-2">
+                        {produto.precoPromocional && (
+                          <span className="text-sm text-muted-foreground line-through">
+                            R$ {produto.precoOriginal.toFixed(2)}
+                          </span>
+                        )}
+                        <span className="text-lg font-bold text-primary">
+                          R$ {(produto.precoPromocional || produto.precoOriginal).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                    <a 
+                      href={produto.ctaLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+                    >
+                      Comprar
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Info Card */}
         <Card className="glass-card">
           <CardContent className="p-4 text-center">
             <div className="flex items-center justify-center gap-3">
               <span className="text-2xl">💡</span>
               <div className="text-left">
-                <p className="font-medium">Dúvidas sobre sua entrega?</p>
+                <p className="font-medium text-white">Dúvidas sobre sua entrega?</p>
                 <p className="text-sm text-muted-foreground">
                   Entre em contato conosco através do WhatsApp ou email de suporte.
                 </p>
@@ -206,7 +265,7 @@ const RastreamentoPublico = () => {
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm text-muted-foreground">
             Rastreamento powered by{' '}
-            <span className="text-primary font-semibold">Pachegar</span>
+            <span className="text-primary font-semibold">RastreieTrack</span>
           </p>
         </div>
       </footer>

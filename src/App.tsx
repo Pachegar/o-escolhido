@@ -18,6 +18,7 @@ import ModelosEntrega from '@/pages/ModelosEntrega';
 import Indicacoes from '@/pages/Indicacoes';
 import Configuracoes from '@/pages/Configuracoes';
 import Planos from '@/pages/Planos';
+import OrderBump from '@/pages/OrderBump';
 import RastreamentoPublico from '@/pages/RastreamentoPublico';
 import NotFound from '@/pages/NotFound';
 
@@ -78,6 +79,11 @@ function App() {
             <Route path="/planos" element={
               <ProtectedRoute>
                 <Planos />
+              </ProtectedRoute>
+            } />
+            <Route path="/orderbump" element={
+              <ProtectedRoute>
+                <OrderBump />
               </ProtectedRoute>
             } />
             

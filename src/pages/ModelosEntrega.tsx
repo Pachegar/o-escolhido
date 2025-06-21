@@ -16,8 +16,7 @@ const ModelosEntrega = () => {
   const [editingModel, setEditingModel] = useState<any>(null);
   const [formData, setFormData] = useState({
     nome: '',
-    minDias: '',
-    maxDias: ''
+    diasEntrega: ''
   });
 
   const { data: modelos, isLoading, refetch } = useQuery({
@@ -28,22 +27,19 @@ const ModelosEntrega = () => {
         {
           id: '1',
           nome: 'Express',
-          min_dias: 2,
-          max_dias: 4,
+          dias_entrega: 3,
           created_at: '2024-01-15'
         },
         {
           id: '2',
           nome: 'Normal',
-          min_dias: 5,
-          max_dias: 7,
+          dias_entrega: 7,
           created_at: '2024-01-15'
         },
         {
           id: '3',
           nome: 'Econômico',
-          min_dias: 7,
-          max_dias: 12,
+          dias_entrega: 15,
           created_at: '2024-01-15'
         }
       ];
@@ -52,6 +48,16 @@ const ModelosEntrega = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const diasNum = parseInt(formData.diasEntrega);
+    if (diasNum < 1 || diasNum > 25) {
+      toast({
+        title: "Erro",
+        description: "O número de dias deve estar entre 1 e 25",
+        variant: "destructive",
+      });
+      return;
+    }
     
     try {
       // Here you would save to Supabase
@@ -64,7 +70,7 @@ const ModelosEntrega = () => {
       
       setDialogOpen(false);
       setEditingModel(null);
-      setFormData({ nome: '', minDias: '', maxDias: '' });
+      setFormData({ nome: '', diasEntrega: '' });
       refetch();
     } catch (error) {
       toast({
@@ -79,8 +85,7 @@ const ModelosEntrega = () => {
     setEditingModel(modelo);
     setFormData({
       nome: modelo.nome,
-      minDias: modelo.min_dias.toString(),
-      maxDias: modelo.max_dias.toString()
+      diasEntrega: modelo.dias_entrega.toString()
     });
     setDialogOpen(true);
   };
@@ -110,7 +115,7 @@ const ModelosEntrega = () => {
   const handleDialogClose = () => {
     setDialogOpen(false);
     setEditingModel(null);
-    setFormData({ nome: '', minDias: '', maxDias: '' });
+    setFormData({ nome: '', diasEntrega: '' });
   };
 
   if (isLoading) {
@@ -131,14 +136,14 @@ const ModelosEntrega = () => {
       <div className="p-6 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold">Modelos de Entrega</h1>
+            <h1 className="text-3xl font-bold text-white">Modelos de Entrega</h1>
             <p className="text-muted-foreground">Configure os prazos de entrega para seus rastreamentos</p>
           </div>
           
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
               <Button 
-                className="hover-button"
+                className="hover-button glow-button"
                 onClick={() => setEditingModel(null)}
               >
                 🚛 Novo modelo
@@ -146,17 +151,17 @@ const ModelosEntrega = () => {
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>
+                <DialogTitle className="text-white">
                   {editingModel ? 'Editar Modelo' : 'Novo Modelo de Entrega'}
                 </DialogTitle>
                 <DialogDescription>
-                  Configure o nome e os prazos de entrega em dias úteis.
+                  Configure o nome e o prazo de entrega em dias úteis.
                 </DialogDescription>
               </DialogHeader>
               
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <Label htmlFor="nome">Nome do Modelo</Label>
+                  <Label htmlFor="nome" className="text-white">Nome do Modelo</Label>
                   <Input
                     id="nome"
                     value={formData.nome}
@@ -167,34 +172,22 @@ const ModelosEntrega = () => {
                   />
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="minDias">Mínimo (dias úteis)</Label>
-                    <Input
-                      id="minDias"
-                      type="number"
-                      min="1"
-                      value={formData.minDias}
-                      onChange={(e) => setFormData(prev => ({ ...prev, minDias: e.target.value }))}
-                      placeholder="2"
-                      required
-                      className="mt-1"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="maxDias">Máximo (dias úteis)</Label>
-                    <Input
-                      id="maxDias"
-                      type="number"
-                      min="1"
-                      value={formData.maxDias}
-                      onChange={(e) => setFormData(prev => ({ ...prev, maxDias: e.target.value }))}
-                      placeholder="4"
-                      required
-                      className="mt-1"
-                    />
-                  </div>
+                <div>
+                  <Label htmlFor="diasEntrega" className="text-white">Dias para entrega (1-25 dias úteis)</Label>
+                  <Input
+                    id="diasEntrega"
+                    type="number"
+                    min="1"
+                    max="25"
+                    value={formData.diasEntrega}
+                    onChange={(e) => setFormData(prev => ({ ...prev, diasEntrega: e.target.value }))}
+                    placeholder="7"
+                    required
+                    className="mt-1"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Número exato de dias úteis para a entrega
+                  </p>
                 </div>
                 
                 <div className="flex gap-4 pt-4">
@@ -208,7 +201,7 @@ const ModelosEntrega = () => {
                   </Button>
                   <Button
                     type="submit"
-                    className="flex-1 hover-button"
+                    className="flex-1 hover-button glow-button"
                   >
                     {editingModel ? 'Atualizar' : 'Criar'}
                   </Button>
@@ -225,20 +218,18 @@ const ModelosEntrega = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Prazo Mínimo</TableHead>
-                    <TableHead>Prazo Máximo</TableHead>
-                    <TableHead>Criado em</TableHead>
-                    <TableHead>Ações</TableHead>
+                    <TableHead className="text-white">Nome</TableHead>
+                    <TableHead className="text-white">Prazo de Entrega</TableHead>
+                    <TableHead className="text-white">Criado em</TableHead>
+                    <TableHead className="text-white">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {modelos?.map((modelo) => (
                     <TableRow key={modelo.id}>
-                      <TableCell className="font-medium">{modelo.nome}</TableCell>
-                      <TableCell>{modelo.min_dias} dias úteis</TableCell>
-                      <TableCell>{modelo.max_dias} dias úteis</TableCell>
-                      <TableCell>{new Date(modelo.created_at).toLocaleDateString('pt-BR')}</TableCell>
+                      <TableCell className="font-medium text-white">{modelo.nome}</TableCell>
+                      <TableCell className="text-white">{modelo.dias_entrega} dias úteis</TableCell>
+                      <TableCell className="text-white">{new Date(modelo.created_at).toLocaleDateString('pt-BR')}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
                           <Button
@@ -268,12 +259,12 @@ const ModelosEntrega = () => {
             {modelos?.length === 0 && (
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">🚛</div>
-                <h3 className="text-lg font-semibold mb-2">Nenhum modelo criado</h3>
+                <h3 className="text-lg font-semibold mb-2 text-white">Nenhum modelo criado</h3>
                 <p className="text-muted-foreground mb-4">
                   Crie seu primeiro modelo de entrega para começar
                 </p>
                 <Button 
-                  className="hover-button"
+                  className="hover-button glow-button"
                   onClick={() => setDialogOpen(true)}
                 >
                   Criar primeiro modelo
@@ -289,11 +280,11 @@ const ModelosEntrega = () => {
             <div className="flex items-start gap-3">
               <span className="text-2xl">💡</span>
               <div>
-                <h3 className="font-semibold mb-1">Como funcionam os modelos?</h3>
+                <h3 className="font-semibold mb-1 text-white">Como funcionam os modelos?</h3>
                 <p className="text-sm text-muted-foreground">
-                  Os modelos de entrega definem os prazos que serão utilizados para gerar 
+                  Os modelos de entrega definem o prazo exato que será utilizado para gerar 
                   automaticamente a linha do tempo dos rastreamentos. O sistema criará eventos 
-                  realistas distribuídos entre o prazo mínimo e máximo configurado.
+                  realistas distribuídos ao longo do período configurado.
                 </p>
               </div>
             </div>

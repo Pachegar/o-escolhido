@@ -8,10 +8,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
+import { Link } from 'react-router-dom';
 
 const Configuracoes = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  
+  // Mock user plan - in real app this would come from auth context
+  const userPlan = 'Polvo'; // or 'Peixe', 'Golfinho', 'Tubarão'
+  const canUploadLogo = ['Polvo', 'Golfinho', 'Tubarão'].includes(userPlan);
+  const canEditMessages = ['Golfinho', 'Tubarão'].includes(userPlan);
+  const canUseCustomDomain = userPlan === 'Tubarão';
   
   const [config, setConfig] = useState({
     logoUrl: '',
@@ -44,6 +51,15 @@ const Configuracoes = () => {
   };
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!canUploadLogo) {
+      toast({
+        title: "Acesso negado",
+        description: "Upload de logo disponível a partir do plano Polvo",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const file = e.target.files?.[0];
     if (file) {
       // Here you would upload to Supabase Storage
@@ -60,17 +76,26 @@ const Configuracoes = () => {
     <Layout>
       <div className="p-6 max-w-4xl mx-auto space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Configurações da Conta</h1>
+          <h1 className="text-3xl font-bold text-white">Configurações da Conta</h1>
           <p className="text-muted-foreground">Personalize a aparência e comportamento da sua conta</p>
         </div>
 
         {/* Logo Section */}
         <Card className="glass-card">
           <CardHeader>
-            <CardTitle>Logo da Empresa</CardTitle>
-            <CardDescription>
-              Personalize o logo que aparece nas páginas públicas de rastreamento
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-white">Logo da Empresa</CardTitle>
+                <CardDescription>
+                  Personalize o logo que aparece nas páginas públicas de rastreamento
+                </CardDescription>
+              </div>
+              {!canUploadLogo && (
+                <span className="text-xs bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded">
+                  Polvo+
+                </span>
+              )}
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-6">
@@ -86,13 +111,14 @@ const Configuracoes = () => {
                 )}
               </div>
               <div className="flex-1">
-                <Label htmlFor="logo-upload">Escolher arquivo</Label>
+                <Label htmlFor="logo-upload" className="text-white">Escolher arquivo</Label>
                 <Input
                   id="logo-upload"
                   type="file"
                   accept="image/*"
                   onChange={handleLogoUpload}
                   className="mt-1"
+                  disabled={!canUploadLogo}
                 />
                 <p className="text-xs text-muted-foreground mt-1">
                   Formatos aceitos: PNG, JPG, SVG. Tamanho máximo: 2MB
@@ -101,8 +127,8 @@ const Configuracoes = () => {
             </div>
             <Button 
               onClick={() => handleSubmit('logo')}
-              disabled={loading}
-              className="hover-button"
+              disabled={loading || !canUploadLogo}
+              className="hover-button glow-button"
             >
               Salvar logo
             </Button>
@@ -112,18 +138,28 @@ const Configuracoes = () => {
         {/* Tone of Voice */}
         <Card className="glass-card">
           <CardHeader>
-            <CardTitle>Tom de Voz</CardTitle>
-            <CardDescription>
-              Escolha o estilo das mensagens que aparecem nos rastreamentos
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-white">Tom de Voz</CardTitle>
+                <CardDescription>
+                  Escolha o estilo das mensagens que aparecem nos rastreamentos
+                </CardDescription>
+              </div>
+              {!canUploadLogo && (
+                <span className="text-xs bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded">
+                  Polvo+
+                </span>
+              )}
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="tom-voz">Tom de voz</Label>
+                <Label htmlFor="tom-voz" className="text-white">Tom de voz</Label>
                 <Select
                   value={config.tomVoz}
                   onValueChange={(value) => setConfig(prev => ({ ...prev, tomVoz: value }))}
+                  disabled={!canUploadLogo}
                 >
                   <SelectTrigger className="mt-1">
                     <SelectValue />
@@ -139,8 +175,8 @@ const Configuracoes = () => {
             </div>
             
             <div className="p-4 bg-muted rounded-lg">
-              <h4 className="font-medium mb-2">Exemplo de mensagem:</h4>
-              <p className="text-sm">
+              <h4 className="font-medium mb-2 text-white">Exemplo de mensagem:</h4>
+              <p className="text-sm text-white">
                 {config.tomVoz === 'carismatico' && "🎉 Oba! Seu pedido está a caminho e chegará em breve!"}
                 {config.tomVoz === 'engracado' && "🚀 Seu pedido saiu para entrega mais rápido que pizza no domingo!"}
                 {config.tomVoz === 'profissional' && "📦 Objeto saiu para entrega ao destinatário."}
@@ -150,8 +186,8 @@ const Configuracoes = () => {
             
             <Button 
               onClick={() => handleSubmit('tom-voz')}
-              disabled={loading}
-              className="hover-button"
+              disabled={loading || !canUploadLogo}
+              className="hover-button glow-button"
             >
               Salvar tom de voz
             </Button>
@@ -161,7 +197,7 @@ const Configuracoes = () => {
         {/* Advanced Features */}
         <Card className="glass-card">
           <CardHeader>
-            <CardTitle>Recursos Avançados</CardTitle>
+            <CardTitle className="text-white">Recursos Avançados</CardTitle>
             <CardDescription>
               Funcionalidades disponíveis em planos superiores
             </CardDescription>
@@ -170,7 +206,7 @@ const Configuracoes = () => {
             {/* Accent Color */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <Label htmlFor="cor-destaque">Cor de destaque</Label>
+                <Label htmlFor="cor-destaque" className="text-white">Cor de destaque</Label>
                 <span className="text-xs bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded">
                   Polvo+
                 </span>
@@ -182,14 +218,14 @@ const Configuracoes = () => {
                   value={config.corDestaque}
                   onChange={(e) => setConfig(prev => ({ ...prev, corDestaque: e.target.value }))}
                   className="w-16 h-10 p-1 cursor-pointer"
-                  disabled
+                  disabled={!canUploadLogo}
                 />
                 <Input
                   value={config.corDestaque}
                   onChange={(e) => setConfig(prev => ({ ...prev, corDestaque: e.target.value }))}
                   placeholder="#0152F8"
                   className="flex-1"
-                  disabled
+                  disabled={!canUploadLogo}
                 />
               </div>
               <p className="text-xs text-muted-foreground mt-1">
@@ -202,7 +238,7 @@ const Configuracoes = () => {
             {/* Subdomain */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <Label htmlFor="subdominio">Subdomínio personalizado</Label>
+                <Label htmlFor="subdominio" className="text-white">Subdomínio personalizado</Label>
                 <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">
                   Golfinho+
                 </span>
@@ -214,14 +250,14 @@ const Configuracoes = () => {
                   onChange={(e) => setConfig(prev => ({ ...prev, subdominio: e.target.value }))}
                   placeholder="minhaloja"
                   className="flex-1"
-                  disabled
+                  disabled={!canEditMessages}
                 />
                 <div className="flex items-center px-3 bg-muted rounded-md border">
-                  <span className="text-sm text-muted-foreground">.pachegar.com</span>
+                  <span className="text-sm text-muted-foreground">.rastreietrack.com.br</span>
                 </div>
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                Acesse através do link: minhaloja.pachegar.com
+                Acesse através do link: minhaloja.rastreietrack.com.br
               </p>
             </div>
 
@@ -230,7 +266,7 @@ const Configuracoes = () => {
             {/* Custom Domain */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <Label htmlFor="dominio-customizado">Domínio customizado</Label>
+                <Label htmlFor="dominio-customizado" className="text-white">Domínio customizado</Label>
                 <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded">
                   Tubarão
                 </span>
@@ -240,11 +276,17 @@ const Configuracoes = () => {
                 value={config.dominioCustomizado}
                 onChange={(e) => setConfig(prev => ({ ...prev, dominioCustomizado: e.target.value }))}
                 placeholder="rastreamento.minhaloja.com"
-                disabled
+                disabled={!canUseCustomDomain}
               />
               <div className="mt-2 p-3 bg-muted rounded-lg">
-                <h4 className="font-medium text-sm mb-1">Configuração CNAME:</h4>
-                <code className="text-xs">rastreamento.minhaloja.com CNAME pachegar.com</code>
+                <h4 className="font-medium text-sm mb-1 text-white">Configuração CNAME:</h4>
+                <code className="text-xs text-white">rastreamento.minhaloja.com CNAME rastreietrack.com.br</code>
+              </div>
+              <div className="mt-2 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                <p className="text-sm text-yellow-300">
+                  <strong>Atenção:</strong> O domínio próprio estará ativo em até 7 dias úteis. 
+                  Verifique a disponibilidade antes em <a href="https://registro.br/" target="_blank" rel="noopener noreferrer" className="underline">https://registro.br/</a>
+                </p>
               </div>
             </div>
 
@@ -252,9 +294,11 @@ const Configuracoes = () => {
               <p className="text-sm text-muted-foreground mb-3">
                 Faça upgrade do seu plano para acessar esses recursos
               </p>
-              <Button variant="outline" className="hover-button">
-                💎 Ver planos
-              </Button>
+              <Link to="/planos">
+                <Button variant="outline" className="hover-button glow-button">
+                  💎 Ver planos
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>

@@ -20,6 +20,12 @@ const menuItems = [
     icon: '🚛'
   },
   {
+    title: 'OrderBump',
+    href: '/orderbump',
+    icon: '🛍️',
+    planRequired: ['Golfinho', 'Tubarão']
+  },
+  {
     title: 'Indique e Ganhe',
     href: '/indicacoes',
     icon: '💰'
@@ -43,6 +49,9 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   const location = useLocation();
   const { signOut } = useAuth();
+
+  // Mock user plan - in real app this would come from auth context
+  const userPlan = 'Golfinho'; // or 'Peixe', 'Polvo', 'Tubarão'
 
   const handleItemClick = () => {
     if (onItemClick) onItemClick();
@@ -69,22 +78,33 @@ export const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
       </div>
       
       <nav className="flex-1 p-4 space-y-2">
-        {menuItems.map((item) => (
-          <Link
-            key={item.href}
-            to={item.href}
-            onClick={handleItemClick}
-            className={cn(
-              "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg group",
-              location.pathname === item.href
-                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                : "hover:bg-accent hover:shadow-md"
-            )}
-          >
-            <span className="text-lg group-hover:scale-110 transition-transform duration-200">{item.icon}</span>
-            <span className="font-medium">{item.title}</span>
-          </Link>
-        ))}
+        {menuItems.map((item) => {
+          // Check if user has access to this menu item
+          const hasAccess = !item.planRequired || item.planRequired.includes(userPlan);
+          
+          return (
+            <Link
+              key={item.href}
+              to={item.href}
+              onClick={handleItemClick}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg group",
+                location.pathname === item.href
+                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                  : "hover:bg-accent hover:shadow-md",
+                !hasAccess && "opacity-50 cursor-not-allowed"
+              )}
+            >
+              <span className="text-lg group-hover:scale-110 transition-transform duration-200">{item.icon}</span>
+              <span className="font-medium text-white">{item.title}</span>
+              {!hasAccess && (
+                <span className="ml-auto text-xs bg-yellow-500/20 text-yellow-300 px-1 py-0.5 rounded">
+                  Premium
+                </span>
+              )}
+            </Link>
+          );
+        })}
       </nav>
       
       <div className="p-4 border-t border-border">
@@ -93,7 +113,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
           className="w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 hover:bg-destructive hover:text-destructive-foreground hover:scale-105 hover:shadow-lg group"
         >
           <span className="text-lg group-hover:scale-110 transition-transform duration-200">🚪</span>
-          <span className="font-medium">Sair</span>
+          <span className="font-medium text-white">Sair</span>
         </button>
       </div>
     </div>
