@@ -55,6 +55,26 @@ const Configuracoes = () => {
     }
   }, [toast]);
 
+  // Password validation function
+  const validatePassword = (password: string) => {
+    const hasLowercase = /[a-z]/.test(password);
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSymbol = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+    const hasMinLength = password.length >= 8;
+
+    return {
+      isValid: hasLowercase && hasUppercase && hasNumber && hasSymbol && hasMinLength,
+      requirements: {
+        hasLowercase,
+        hasUppercase,
+        hasNumber,
+        hasSymbol,
+        hasMinLength
+      }
+    };
+  };
+
   const handleSubmit = async (section: string) => {
     setLoading(true);
     
@@ -87,10 +107,18 @@ const Configuracoes = () => {
       return;
     }
 
-    if (accountSettings.newPassword.length < 8) {
+    const passwordValidation = validatePassword(accountSettings.newPassword);
+    if (!passwordValidation.isValid) {
+      const missing = [];
+      if (!passwordValidation.requirements.hasMinLength) missing.push('pelo menos 8 caracteres');
+      if (!passwordValidation.requirements.hasLowercase) missing.push('letras minúsculas');
+      if (!passwordValidation.requirements.hasUppercase) missing.push('letras maiúsculas');
+      if (!passwordValidation.requirements.hasNumber) missing.push('números');
+      if (!passwordValidation.requirements.hasSymbol) missing.push('símbolos');
+
       toast({
-        title: "Erro",
-        description: "A nova senha deve ter pelo menos 8 caracteres.",
+        title: "Senha não atende aos critérios",
+        description: `A senha deve conter: ${missing.join(', ')}.`,
         variant: "destructive",
       });
       return;
@@ -192,6 +220,8 @@ const Configuracoes = () => {
     }
   };
 
+  const passwordValidation = validatePassword(accountSettings.newPassword);
+
   return (
     <Layout>
       <div className="p-6 max-w-4xl mx-auto space-y-6">
@@ -222,6 +252,28 @@ const Configuracoes = () => {
                     placeholder="Digite sua nova senha"
                     className="mt-1"
                   />
+                  {accountSettings.newPassword && (
+                    <div className="mt-2 p-3 bg-muted rounded-lg">
+                      <p className="text-xs text-white mb-2">A senha deve conter:</p>
+                      <ul className="text-xs space-y-1">
+                        <li className={passwordValidation.requirements.hasMinLength ? 'text-green-400' : 'text-red-400'}>
+                          ✓ Pelo menos 8 caracteres
+                        </li>
+                        <li className={passwordValidation.requirements.hasLowercase ? 'text-green-400' : 'text-red-400'}>
+                          ✓ Letras minúsculas
+                        </li>
+                        <li className={passwordValidation.requirements.hasUppercase ? 'text-green-400' : 'text-red-400'}>
+                          ✓ Letras maiúsculas
+                        </li>
+                        <li className={passwordValidation.requirements.hasNumber ? 'text-green-400' : 'text-red-400'}>
+                          ✓ Números
+                        </li>
+                        <li className={passwordValidation.requirements.hasSymbol ? 'text-green-400' : 'text-red-400'}>
+                          ✓ Símbolos (!@#$%^&* etc.)
+                        </li>
+                      </ul>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="confirm-new-password" className="text-white">Confirmar nova senha</Label>
@@ -236,7 +288,7 @@ const Configuracoes = () => {
               </div>
               <Button
                 onClick={handlePasswordChange}
-                disabled={loading || !accountSettings.newPassword || !accountSettings.confirmNewPassword}
+                disabled={loading || !accountSettings.newPassword || !accountSettings.confirmNewPassword || !passwordValidation.isValid}
                 className="hover-button glow-button"
               >
                 Alterar senha

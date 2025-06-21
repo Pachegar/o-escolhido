@@ -116,20 +116,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error };
   };
 
-  const updatePassword = async (newPassword: string) => {
-    console.log('Attempting to update password');
-    setLoading(true);
-    
-    const { error } = await supabase.auth.updateUser({
-      password: newPassword
-    });
-
-    console.log('Password update result:', { error });
-    setLoading(false);
-    
-    return { error };
-  };
-
   const updateEmail = async (newEmail: string) => {
     console.log('Attempting to update email to:', newEmail);
     setLoading(true);
@@ -139,6 +125,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     console.log('Email update result:', { error });
+    setLoading(false);
+    
+    return { error };
+  };
+
+  const updatePassword = async (newPassword: string) => {
+    console.log('Attempting to update password');
+    setLoading(true);
+    
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+
+    console.log('Password update result:', { error });
     setLoading(false);
     
     return { error };
