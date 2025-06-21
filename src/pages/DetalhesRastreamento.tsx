@@ -48,7 +48,7 @@ const DetalhesRastreamento = () => {
   });
 
   const copyLink = () => {
-    const link = `${window.location.origin}${rastreamento?.linkPublico}`;
+    const link = `https://rastreietrack.com.br${rastreamento?.linkPublico}`;
     navigator.clipboard.writeText(link);
     // Add toast notification here
   };
@@ -57,8 +57,8 @@ const DetalhesRastreamento = () => {
     const variants = {
       postado: { label: 'Postado', variant: 'secondary' as const },
       em_transito: { label: 'Em trânsito', variant: 'default' as const },
-      entregue: { label: 'Entregue', variant: 'default' as const },
-      tentativa: { label: 'Tentativa', variant: 'destructive' as const }
+      eminente_entrega: { label: 'Eminente Entrega', variant: 'default' as const },
+      em_atraso: { label: 'Em Atraso', variant: 'destructive' as const }
     };
     
     const config = variants[status as keyof typeof variants] || variants.postado;
@@ -106,7 +106,7 @@ const DetalhesRastreamento = () => {
       <div className="p-6 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold">{rastreamento.codigo}</h1>
+            <h1 className="text-3xl font-bold text-white">{rastreamento.codigo}</h1>
             <p className="text-muted-foreground">Detalhes do rastreamento</p>
           </div>
           <div className="flex gap-2">
@@ -131,7 +131,7 @@ const DetalhesRastreamento = () => {
               <CardTitle className="text-sm font-medium text-muted-foreground">Cliente</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-xl font-semibold">{rastreamento.cliente}</p>
+              <p className="text-xl font-semibold text-white">{rastreamento.cliente}</p>
             </CardContent>
           </Card>
 
@@ -140,7 +140,7 @@ const DetalhesRastreamento = () => {
               <CardTitle className="text-sm font-medium text-muted-foreground">Destino</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-xl font-semibold">{rastreamento.cidade}, {rastreamento.estado}</p>
+              <p className="text-xl font-semibold text-white">{rastreamento.cidade}, {rastreamento.estado}</p>
             </CardContent>
           </Card>
 
@@ -158,7 +158,7 @@ const DetalhesRastreamento = () => {
               <CardTitle className="text-sm font-medium text-muted-foreground">Cliques</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-xl font-semibold">{rastreamento.clicks}</p>
+              <p className="text-xl font-semibold text-white">{rastreamento.clicks}</p>
               <p className="text-sm text-muted-foreground">no link público</p>
             </CardContent>
           </Card>
@@ -167,7 +167,7 @@ const DetalhesRastreamento = () => {
         {/* Timeline */}
         <Card className="glass-card">
           <CardHeader>
-            <CardTitle>Linha do Tempo</CardTitle>
+            <CardTitle className="text-white">Linha do Tempo</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -185,7 +185,7 @@ const DetalhesRastreamento = () => {
                   <div className="flex-1 pb-4">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                       <div>
-                        <p className="font-medium">{evento.mensagem}</p>
+                        <p className="font-medium text-white">{evento.mensagem}</p>
                         <p className="text-sm text-muted-foreground">{evento.local}</p>
                       </div>
                       <div className="text-sm text-muted-foreground">
@@ -202,12 +202,12 @@ const DetalhesRastreamento = () => {
         {/* Public Link Preview */}
         <Card className="glass-card">
           <CardHeader>
-            <CardTitle>Link Público</CardTitle>
+            <CardTitle className="text-white">Link Público</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-4 p-3 bg-muted rounded-lg">
-              <code className="flex-1 text-sm">
-                {window.location.origin}{rastreamento.linkPublico}
+              <code className="flex-1 text-sm text-white">
+                https://rastreietrack.com.br{rastreamento.linkPublico}
               </code>
               <Button
                 size="sm"
@@ -216,8 +216,8 @@ const DetalhesRastreamento = () => {
               >
                 📋 Copiar
               </Button>
-              <Link
-                to={rastreamento.linkPublico}
+              <a
+                href={`https://rastreietrack.com.br${rastreamento.linkPublico}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -228,7 +228,7 @@ const DetalhesRastreamento = () => {
                 >
                   🔗 Abrir
                 </Button>
-              </Link>
+              </a>
             </div>
             <p className="text-sm text-muted-foreground mt-2">
               Compartilhe este link com seu cliente para que ele possa acompanhar o rastreamento.

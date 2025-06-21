@@ -1,197 +1,199 @@
 
+import { useState } from 'react';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
-import { Copy, Gift, Users, Star } from 'lucide-react';
-import { useState } from 'react';
 
 const Indicacoes = () => {
+  const { toast } = useToast();
   const { user } = useAuth();
   const [copied, setCopied] = useState(false);
-  
-  // Mock data - seria vindo do Supabase
-  const referralCode = `PACHEGAR${user?.id?.slice(-6).toUpperCase()}`;
-  const referralLink = `https://pachegar.com.br/cadastro?ref=${referralCode}`;
-  const referralsCount = 3;
-  const bonusTickets = 45; // 3 referrals × 15 tickets each
-  const pendingReferrals = 1;
 
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(referralLink);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Erro ao copiar:', err);
-    }
+  // Mock user data - in real app this would come from auth context
+  const userReferralCode = 'REF-12345ABC';
+  const referralLink = `https://pachegar.com.br/planos?ref=${userReferralCode}`;
+  const totalIndicacoes = 3;
+  const rastreiosGanhos = 45; // 3 * 15
+
+  const copyReferralLink = () => {
+    navigator.clipboard.writeText(referralLink);
+    setCopied(true);
+    toast({
+      title: "Link copiado!",
+      description: "O link de indicação foi copiado para a área de transferência",
+    });
+    
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <Layout>
-      <div className="p-6 space-y-6 max-w-6xl mx-auto">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold flex items-center gap-3">
-              <Gift className="h-8 w-8 text-primary" />
-              Indique e Ganhe
-            </h1>
-            <p className="text-muted-foreground">
-              Convide amigos e ganhe rastreamentos extras para sua conta
-            </p>
-          </div>
+      <div className="p-6 space-y-6">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-white mb-2">Indique e Ganhe</h1>
+          <p className="text-muted-foreground">
+            Compartilhe nosso sistema e ganhe rastreios extras para cada amigo que assinar um plano
+          </p>
         </div>
 
-        {/* Como Funciona */}
-        <Card className="glass-card border-primary/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Star className="h-5 w-5 text-primary" />
-              Como Funciona
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center p-4 rounded-lg bg-primary/10">
-                <div className="text-3xl mb-2">1️⃣</div>
-                <h3 className="font-semibold mb-2">Compartilhe seu link</h3>
-                <p className="text-sm text-muted-foreground">
-                  Envie seu link único para amigos e colegas
-                </p>
-              </div>
-              <div className="text-center p-4 rounded-lg bg-primary/10">
-                <div className="text-3xl mb-2">2️⃣</div>
-                <h3 className="font-semibold mb-2">Eles se cadastram</h3>
-                <p className="text-sm text-muted-foreground">
-                  Quando se registram pelo seu link
-                </p>
-              </div>
-              <div className="text-center p-4 rounded-lg bg-primary/10">
-                <div className="text-3xl mb-2">3️⃣</div>
-                <h3 className="font-semibold mb-2">Você ganha +15</h3>
-                <p className="text-sm text-muted-foreground">
-                  Rastreamentos extras quando assinam um plano
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Stats */}
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="glass-card">
-            <CardHeader className="pb-2">
-              <CardDescription>Indicações Confirmadas</CardDescription>
-              <CardTitle className="text-3xl flex items-center gap-2">
-                <Users className="h-6 w-6 text-primary" />
-                {referralsCount}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-muted-foreground">
-                ✅ Amigos que assinaram planos
-              </p>
+          <Card className="glass-card text-center">
+            <CardContent className="p-6">
+              <div className="text-3xl mb-2">👥</div>
+              <h3 className="text-2xl font-bold text-white">{totalIndicacoes}</h3>
+              <p className="text-muted-foreground">Indicações Realizadas</p>
             </CardContent>
           </Card>
 
-          <Card className="glass-card">
-            <CardHeader className="pb-2">
-              <CardDescription>Rastreamentos Bônus</CardDescription>
-              <CardTitle className="text-3xl text-primary">+{bonusTickets}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-muted-foreground">
-                🎁 Ganhos por indicações
-              </p>
+          <Card className="glass-card text-center">
+            <CardContent className="p-6">
+              <div className="text-3xl mb-2">🎁</div>
+              <h3 className="text-2xl font-bold text-white">{rastreiosGanhos}</h3>
+              <p className="text-muted-foreground">Rastreios Extras Ganhos</p>
             </CardContent>
           </Card>
 
-          <Card className="glass-card">
-            <CardHeader className="pb-2">
-              <CardDescription>Aguardando Assinatura</CardDescription>
-              <CardTitle className="text-3xl">{pendingReferrals}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-muted-foreground">
-                ⏳ Cadastros pendentes
-              </p>
+          <Card className="glass-card text-center">
+            <CardContent className="p-6">
+              <div className="text-3xl mb-2">⭐</div>
+              <h3 className="text-2xl font-bold text-white">15</h3>
+              <p className="text-muted-foreground">Rastreios por Indicação</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Link de Indicação */}
+        {/* Referral Link Section */}
         <Card className="glass-card">
           <CardHeader>
-            <CardTitle>Seu Link de Indicação</CardTitle>
-            <CardDescription>
-              Compartilhe este link para ganhar rastreamentos extras
-            </CardDescription>
+            <CardTitle className="text-white text-center">Seu Link de Indicação</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex gap-2">
-              <Input 
-                value={referralLink} 
-                readOnly 
-                className="bg-muted/50"
+              <Input
+                value={referralLink}
+                readOnly
+                className="font-mono text-sm"
               />
-              <Button 
-                onClick={copyToClipboard}
-                variant="outline"
-                className="hover-button flex items-center gap-2"
+              <Button
+                onClick={copyReferralLink}
+                className={`hover-button glow-button ${copied ? 'bg-green-500' : ''}`}
+                disabled={copied}
               >
-                <Copy className="h-4 w-4" />
-                {copied ? 'Copiado!' : 'Copiar'}
+                {copied ? '✓ Copiado' : '📋 Copiar'}
               </Button>
             </div>
             
-            <div className="text-sm text-muted-foreground">
-              <p><strong>Seu código:</strong> {referralCode}</p>
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground mb-4">
+                Compartilhe este link nas suas redes sociais ou envie diretamente para seus amigos
+              </p>
+              
+              <div className="flex justify-center gap-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const whatsappText = encodeURIComponent(
+                      `Olá! Descobri um sistema incrível para rastreamento de pedidos. Dá uma olhada: ${referralLink}`
+                    );
+                    window.open(`https://wa.me/?text=${whatsappText}`, '_blank');
+                  }}
+                  className="hover-button"
+                >
+                  📱 WhatsApp
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const twitterText = encodeURIComponent(
+                      `Descobri um sistema incrível para rastreamento de pedidos! ${referralLink}`
+                    );
+                    window.open(`https://twitter.com/intent/tweet?text=${twitterText}`, '_blank');
+                  }}
+                  className="hover-button"
+                >
+                  🐦 Twitter
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const emailSubject = encodeURIComponent('Sistema de Rastreamento Incrível');
+                    const emailBody = encodeURIComponent(
+                      `Olá!\n\nDescobri um sistema incrível para rastreamento de pedidos e achei que você pode se interessar.\n\nConfira aqui: ${referralLink}\n\nAbraços!`
+                    );
+                    window.open(`mailto:?subject=${emailSubject}&body=${emailBody}`, '_blank');
+                  }}
+                  className="hover-button"
+                >
+                  ✉️ Email
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Histórico de Indicações */}
+        {/* How it Works */}
         <Card className="glass-card">
           <CardHeader>
-            <CardTitle>Histórico de Indicações</CardTitle>
-            <CardDescription>
-              Acompanhe suas indicações e recompensas
-            </CardDescription>
+            <CardTitle className="text-white">Como Funciona</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                  <div>
-                    <p className="font-medium">loja***@email.com</p>
-                    <p className="text-xs text-muted-foreground">Plano Cavalo-marinho • há 2 dias</p>
-                  </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">1️⃣</span>
                 </div>
-                <div className="text-green-500 font-medium">+15 rastreamentos</div>
+                <h3 className="font-semibold mb-2 text-white">Compartilhe</h3>
+                <p className="text-sm text-muted-foreground">
+                  Envie seu link de indicação para amigos que podem se interessar pelo sistema
+                </p>
               </div>
               
-              <div className="flex items-center justify-between p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                  <div>
-                    <p className="font-medium">drop***@email.com</p>
-                    <p className="text-xs text-muted-foreground">Plano Peixe • há 1 semana</p>
-                  </div>
+              <div className="text-center">
+                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">2️⃣</span>
                 </div>
-                <div className="text-green-500 font-medium">+15 rastreamentos</div>
+                <h3 className="font-semibold mb-2 text-white">Amigo Assina</h3>
+                <p className="text-sm text-muted-foreground">
+                  Quando seu amigo assinar qualquer plano pago através do seu link
+                </p>
               </div>
-
-              <div className="flex items-center justify-between p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
-                  <div>
-                    <p className="font-medium">nova***@email.com</p>
-                    <p className="text-xs text-muted-foreground">Cadastrado • aguardando assinatura</p>
-                  </div>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">3️⃣</span>
                 </div>
-                <div className="text-yellow-500 font-medium">Pendente</div>
+                <h3 className="font-semibold mb-2 text-white">Você Ganha</h3>
+                <p className="text-sm text-muted-foreground">
+                  Receba 15 rastreios extras na sua conta (bônus único, não renovável)
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Terms */}
+        <Card className="glass-card">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl">ℹ️</span>
+              <div>
+                <h3 className="font-semibold mb-1 text-white">Termos Importantes</h3>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• Os rastreios extras são adicionados apenas uma vez por indicação</li>
+                  <li>• O bônus não é renovável mensalmente</li>
+                  <li>• O amigo deve assinar um plano pago para validar a indicação</li>
+                  <li>• Não há limite de indicações que você pode fazer</li>
+                  <li>• Os rastreios são creditados automaticamente após confirmação do pagamento</li>
+                </ul>
               </div>
             </div>
           </CardContent>

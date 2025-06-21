@@ -65,17 +65,17 @@
   .ocean-waves {
     background: linear-gradient(
       135deg,
-      rgba(1, 82, 248, 0.08) 0%,
-      rgba(1, 82, 248, 0.15) 25%,
-      rgba(1, 82, 248, 0.12) 50%,
-      rgba(1, 82, 248, 0.06) 75%,
-      rgba(1, 82, 248, 0.10) 100%
+      rgba(1, 82, 248, 0.15) 0%,
+      rgba(1, 82, 248, 0.25) 25%,
+      rgba(1, 82, 248, 0.20) 50%,
+      rgba(1, 82, 248, 0.12) 75%,
+      rgba(1, 82, 248, 0.18) 100%
     );
     background-size: 400% 400%;
     animation: ocean-drift 20s ease-in-out infinite;
     width: 100%;
     height: 100%;
-    opacity: 0.8;
+    opacity: 1;
   }
 
   .ocean-waves::before {
@@ -87,7 +87,7 @@
     bottom: 0;
     background: radial-gradient(
       ellipse at top,
-      rgba(1, 82, 248, 0.15) 0%,
+      rgba(1, 82, 248, 0.25) 0%,
       transparent 70%
     );
     animation: ocean-pulse 15s ease-in-out infinite;
@@ -103,7 +103,7 @@
     background: linear-gradient(
       45deg,
       transparent 30%,
-      rgba(1, 82, 248, 0.06) 50%,
+      rgba(1, 82, 248, 0.12) 50%,
       transparent 70%
     );
     background-size: 200% 200%;
@@ -122,11 +122,11 @@
 
 @keyframes ocean-pulse {
   0%, 100% {
-    opacity: 0.4;
+    opacity: 0.6;
     transform: scale(1);
   }
   50% {
-    opacity: 0.8;
+    opacity: 1;
     transform: scale(1.1);
   }
 }

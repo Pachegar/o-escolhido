@@ -18,7 +18,7 @@ const RastreamentoPublico = () => {
       return {
         codigo: slug,
         cliente: 'João Silva',
-        logo: null, // Could be a custom logo URL
+        logo: null, // Could be a custom logo URL from Polvo+ plans
         progresso: 75,
         eventos: [
           {
@@ -92,7 +92,7 @@ const RastreamentoPublico = () => {
         <Card className="w-full max-w-md glass-card">
           <CardContent className="text-center py-12">
             <div className="text-6xl mb-4">❌</div>
-            <h2 className="text-xl font-semibold mb-2">Código não encontrado</h2>
+            <h2 className="text-xl font-semibold mb-2 text-white">Código não encontrado</h2>
             <p className="text-muted-foreground">
               O código de rastreamento informado não existe ou foi removido.
             </p>
@@ -116,15 +116,18 @@ const RastreamentoPublico = () => {
                   className="h-10 w-auto"
                 />
               ) : (
-                <img 
-                  src="/lovable-uploads/eb8d8e3b-2f97-4b6a-b22a-6a8273307baa.png" 
-                  alt="RastreieTrack" 
-                  className="h-10 w-auto"
-                />
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                    <span className="text-white font-bold text-lg">R</span>
+                  </div>
+                  <div>
+                    <h1 className="text-lg font-bold text-white">RastreieTrack</h1>
+                  </div>
+                </div>
               )}
             </div>
             <div className="text-right">
-              <h1 className="text-xl font-bold">Rastreamento</h1>
+              <h1 className="text-xl font-bold text-white">Rastreamento</h1>
               <p className="text-sm text-muted-foreground">{rastreamento?.codigo}</p>
             </div>
           </div>
