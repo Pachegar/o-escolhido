@@ -62,7 +62,6 @@ const planos = [
       'Rastreamentos ilimitados',
       'Domínio customizado',
       'Suporte 24/7',
-      'Gerente de conta dedicado',
       'Automação de envio de rastreio pelo WhatsApp',
       'Acesso antecipado a novos recursos',
       'Acesso exclusivo ao grupo networking tubarão'
