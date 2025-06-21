@@ -172,7 +172,7 @@ const Configuracoes = () => {
               <div className="flex items-center justify-between mb-2">
                 <Label htmlFor="cor-destaque">Cor de destaque</Label>
                 <span className="text-xs bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded">
-                  Cavalo-marinho+
+                  Polvo+
                 </span>
               </div>
               <div className="flex gap-3">
