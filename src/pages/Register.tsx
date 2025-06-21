@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -63,42 +62,38 @@ const Register = () => {
 
     setLoading(true);
 
-    const { error } = await signUp(email, password);
+    const result = await signUp(email, password);
 
-    if (error) {
-      console.error('Signup error:', error);
+    if (result.error) {
+      console.error('Signup error:', result.error);
       
-      // Check if it's a "user already exists" error
-      if (error.message === 'User already registered' || 
-          error.message.includes('already been registered') ||
-          error.message.includes('already registered') ||
-          error.message.includes('email address is already registered')) {
-        setEmailError(true);
-        toast.error("❌ Este e-mail já está cadastrado. Tente fazer login ou redefinir sua senha.");
-      } else if (error.message.includes('Invalid email')) {
+      // Check for various error conditions
+      if (result.error.message.includes('Invalid email')) {
         setEmailError(true);
         toast.error("Email inválido. Verifique o formato do email.");
-      } else if (error.message.includes('Password should be')) {
+      } else if (result.error.message.includes('Password should be')) {
         toast.error("Senha muito fraca. Use pelo menos 8 caracteres incluindo letras maiúsculas, minúsculas, números e símbolos.");
-      } else if (error.message.includes('rate limit') || error.message.includes('too many')) {
+      } else if (result.error.message.includes('rate limit') || result.error.message.includes('too many')) {
         toast.error("Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.");
-      } else if (error.message.includes('signup is disabled')) {
+      } else if (result.error.message.includes('signup is disabled')) {
         toast.error("Cadastro temporariamente desabilitado. Tente novamente mais tarde.");
       } else {
-        // For any other error that might indicate the user already exists
-        if (error.message.toLowerCase().includes('user') && error.message.toLowerCase().includes('exist')) {
-          setEmailError(true);
-          toast.error("❌ Este e-mail já está cadastrado. Tente fazer login ou redefinir sua senha.");
-        } else {
-          toast.error(`Erro: ${error.message}`);
-        }
+        toast.error(`Erro: ${result.error.message}`);
       }
-    } else {
-      // Only show success message and redirect if there's no error
+    } else if (result.data && result.data.user && !result.data.user.email_confirmed_at && result.data.user.identities && result.data.user.identities.length === 0) {
+      // This indicates the user already exists (Supabase returns user data but no identities for existing users)
+      setEmailError(true);
+      toast.error("❌ Este e-mail já está cadastrado. Tente fazer login ou redefinir sua senha.");
+    } else if (result.data && result.data.user && result.data.user.identities && result.data.user.identities.length > 0) {
+      // New user successfully created
       navigate('/login');
       setTimeout(() => {
         toast.success("✅ Conta criada! Enviamos um e-mail de confirmação para você ativar seu acesso.");
       }, 100);
+    } else {
+      // Fallback: if we can't determine the state, assume email already exists
+      setEmailError(true);
+      toast.error("❌ Este e-mail já está cadastrado. Tente fazer login ou redefinir sua senha.");
     }
 
     setLoading(false);
