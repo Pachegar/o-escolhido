@@ -6,7 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { SmartInsights } from '@/components/SmartInsights';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { TrendingUp, TrendingDown, ArrowUpRight } from 'lucide-react';
 
