@@ -14,7 +14,7 @@ const planos = [
       '60 rastreamentos por mês',
       'Páginas públicas básicas',
       'Suporte por email',
-      'Tom de voz neutro'
+      'Tom de voz neutro',
       'Acesso exclusivo ao grupo networking peixes'
     ],
     current: true,
