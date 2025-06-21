@@ -8,7 +8,7 @@ import { Progress } from '@/components/ui/progress';
 const planos = [
   {
     name: 'Peixe',
-    price: 'R$ 49,90/mês',
+    price: 'R$ 48,90/mês',
     trackings: 60,
     features: [
       '60 rastreamentos por mês',
