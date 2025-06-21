@@ -64,6 +64,7 @@ const planos = [
       'Suporte 24/7',
       'Gerente de conta dedicado',
       'Automação de envio de rastreio pelo WhatsApp',
+      'Acesso antecipado a novos recursos',
       'Acesso exclusivo ao grupo networking tubarão'
     ],
     current: false,
@@ -226,28 +227,91 @@ const Planos = () => {
                     <td className="text-center">∞</td>
                   </tr>
                   <tr className="border-b border-border/50">
-                    <td className="py-3">Logo personalizado</td>
+                    <td className="py-3">Logo e cores da sua loja</td>
                     <td className="text-center">❌</td>
                     <td className="text-center">✅</td>
                     <td className="text-center">✅</td>
                     <td className="text-center">✅</td>
                   </tr>
                   <tr className="border-b border-border/50">
-                    <td className="py-3">Cor de destaque</td>
+                    <td className="py-3">Escolha o tom das mensagens de rastreio</td>
                     <td className="text-center">❌</td>
                     <td className="text-center">✅</td>
                     <td className="text-center">✅</td>
                     <td className="text-center">✅</td>
                   </tr>
                   <tr className="border-b border-border/50">
-                    <td className="py-3">Subdomínio</td>
+                    <td className="py-3">Suporte padrão</td>
+                    <td className="text-center">✅</td>
+                    <td className="text-center">✅</td>
+                    <td className="text-center">✅</td>
+                    <td className="text-center">✅</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="py-3">Suporte prioritário</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">✅</td>
+                    <td className="text-center">✅</td>
+                    <td className="text-center">✅</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="py-3">Suporte 24/7</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">✅</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="py-3">Subdomínio exclusivo na página de rastreio</td>
                     <td className="text-center">❌</td>
                     <td className="text-center">❌</td>
                     <td className="text-center">✅</td>
                     <td className="text-center">✅</td>
                   </tr>
                   <tr className="border-b border-border/50">
-                    <td className="py-3">Domínio customizado</td>
+                    <td className="py-3">Domínio exclusivo na página de rastreio</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">✅</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="py-3">Relatório e análise de dados enviados mensalmente</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">✅</td>
+                    <td className="text-center">✅</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="py-3">Automação de envio de rastreio via e-mail</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">✅</td>
+                    <td className="text-center">✅</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="py-3">Automação de envio de rastreio via WhatsApp</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">✅</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="py-3">OrderBump/UpSell/DownSell na página de rastreio</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">✅</td>
+                    <td className="text-center">✅</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="py-3">Networking exclusivo em grupo de WhatsApp do seu plano</td>
+                    <td className="text-center">✅</td>
+                    <td className="text-center">✅</td>
+                    <td className="text-center">✅</td>
+                    <td className="text-center">✅</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="py-3">Acesso antecipado a novos recursos</td>
                     <td className="text-center">❌</td>
                     <td className="text-center">❌</td>
                     <td className="text-center">❌</td>
