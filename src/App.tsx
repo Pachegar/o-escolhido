@@ -33,6 +33,7 @@ function App() {
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/registro" element={<Register />} />
             <Route path="/cadastro" element={<Register />} />
             
             {/* Protected Routes */}
