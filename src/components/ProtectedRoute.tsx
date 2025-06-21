@@ -1,21 +1,13 @@
 
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { Navigate } from 'react-router-dom';
 
-const Index = () => {
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, loading } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!loading) {
-      if (user) {
-        navigate('/dashboard');
-      } else {
-        navigate('/login');
-      }
-    }
-  }, [user, loading, navigate]);
 
   if (loading) {
     return (
@@ -28,7 +20,9 @@ const Index = () => {
     );
   }
 
-  return null;
-};
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
-export default Index;
+  return <>{children}</>;
+};
