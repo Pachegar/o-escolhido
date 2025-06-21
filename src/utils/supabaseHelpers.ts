@@ -35,11 +35,17 @@ export const getPublicTracking = async (trackingCode: string) => {
 
 // Função para incrementar cliques no rastreamento
 export const incrementTrackingClicks = async (trackingId: string) => {
-  const { error } = await supabase.rpc('increment_tracking_clicks', {
-    tracking_id: trackingId
-  });
-  
-  if (error) {
+  try {
+    // Usar uma query SQL simples para incrementar cliques
+    const { error } = await supabase
+      .from('trackings')
+      .update({ clicks: supabase.sql`clicks + 1` })
+      .eq('id', trackingId);
+    
+    if (error) {
+      console.error('Error incrementing clicks:', error);
+    }
+  } catch (error) {
     console.error('Error incrementing clicks:', error);
   }
 };

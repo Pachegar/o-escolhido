@@ -47,7 +47,7 @@ const Login = () => {
         setResetMode(false);
       }
     } else {
-      const { error } = await signIn(email, password, rememberMe);
+      const { error } = await signIn(email, password);
 
       if (error) {
         console.error('Login error:', error);
