@@ -8,27 +8,29 @@ import { Progress } from '@/components/ui/progress';
 const planos = [
   {
     name: 'Peixe',
-    price: 'Gratuito',
+    price: 'R$ 49,90/mês',
     trackings: 60,
     features: [
       '60 rastreamentos por mês',
       'Páginas públicas básicas',
       'Suporte por email',
-      'Tom de voz fixo'
+      'Tom de voz neutro'
+      'Acesso exclusivo ao grupo networking peixes'
     ],
     current: true,
     upgrade: false
   },
   {
     name: 'Cavalo-marinho',
-    price: 'R$ 29,90/mês',
+    price: 'R$ 97,90/mês',
     trackings: 200,
     features: [
       '200 rastreamentos por mês',
-      'Cor de destaque personalizada',
-      'Logo personalizado',
+      'Cores personalizadas na página de rastreio',
+      'Logo da sua loja na página de rastreio',
       'Todos os tons de voz',
-      'Suporte prioritário'
+      'Suporte prioritário',
+      'Acesso exclusivo ao grupo networking cavalo-marinho'
     ],
     current: false,
     upgrade: true,
@@ -40,10 +42,11 @@ const planos = [
     trackings: 500,
     features: [
       '500 rastreamentos por mês',
-      'Subdomínio personalizado',
+      'Subdomínio personalizado na página de rastreio',
       'Todas as funcionalidades anteriores',
-      'Analytics avançados',
-      'API de integração'
+      'Analytics avançados enviadas por e-mail',
+      'Automação de envio de rastreio pelo e-mail',
+      'Acesso exclusivo ao grupo networking golfinho'
     ],
     current: false,
     upgrade: true
@@ -55,9 +58,11 @@ const planos = [
     features: [
       'Rastreamentos ilimitados',
       'Domínio customizado',
-      'White label completo',
+      'Todas as funcionalidades anteriores',
       'Suporte 24/7',
-      'Gerente de conta dedicado'
+      'Gerente de conta dedicado',
+      'Automação de envio de rastreio pelo WhatsApp',
+      'Acesso exclusivo ao grupo networking tubarão'
     ],
     current: false,
     upgrade: true
