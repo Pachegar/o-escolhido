@@ -44,6 +44,7 @@ const planos = [
     features: [
       'Todas as funcionalidades anteriores',
       '500 rastreamentos por mês',
+      'Editar mensagens da página de rastreio',
       'Subdomínio personalizado na página de rastreio',
       'Relatório e análise de dados enviados mensalmente',
       'OrderBump/UpSell/DownSell na página de rastreio',
@@ -236,6 +237,13 @@ const Planos = () => {
                     <td className="py-3">Escolha o tom das mensagens de rastreio</td>
                     <td className="text-center">❌</td>
                     <td className="text-center">✅</td>
+                    <td className="text-center">✅</td>
+                    <td className="text-center">✅</td>
+                  </tr>
+                  <tr className="border-b border-border/50">
+                    <td className="py-3">Editar mensagens da página de rastreio</td>
+                    <td className="text-center">❌</td>
+                    <td className="text-center">❌</td>
                     <td className="text-center">✅</td>
                     <td className="text-center">✅</td>
                   </tr>
