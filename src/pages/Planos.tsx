@@ -21,7 +21,7 @@ const planos = [
     upgrade: false
   },
   {
-    name: 'Cavalo-marinho',
+    name: 'Polvo',
     price: 'R$ 97/mês',
     trackings: 200,
     features: [
@@ -31,7 +31,7 @@ const planos = [
       'Logo da sua loja na página de rastreio',
       'Todos os tons de voz',
       'Suporte prioritário',
-      'Acesso exclusivo ao grupo networking cavalo-marinho'
+      'Acesso exclusivo ao grupo networking Polvo'
     ],
     current: false,
     upgrade: true,
@@ -212,7 +212,7 @@ const Planos = () => {
                   <tr className="border-b border-border">
                     <th className="text-left py-3">Recurso</th>
                     <th className="text-center py-3">🐟 Peixe</th>
-                    <th className="text-center py-3">🦄 Cavalo-marinho</th>
+                    <th className="text-center py-3">🐙 Polvo</th>
                     <th className="text-center py-3">🐬 Golfinho</th>
                     <th className="text-center py-3">🦈 Tubarão</th>
                   </tr>
