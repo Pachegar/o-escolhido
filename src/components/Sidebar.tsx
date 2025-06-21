@@ -64,7 +64,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
           />
           <div>
             <h1 className="text-2xl font-bold text-primary">Pachegar</h1>
-            <p className="text-sm text-muted-foreground">Plataforma de Rastreamento</p>
           </div>
         </div>
       </div>
