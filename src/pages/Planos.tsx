@@ -227,7 +227,7 @@ const Planos = () => {
                     <td className="text-center">∞</td>
                   </tr>
                   <tr className="border-b border-border/50">
-                    <td className="py-3">Logo e cores da sua loja</td>
+                    <td className="py-3">Logo e cores da sua loja na página de rastreio</td>
                     <td className="text-center">❌</td>
                     <td className="text-center">✅</td>
                     <td className="text-center">✅</td>
