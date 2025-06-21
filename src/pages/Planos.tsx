@@ -31,7 +31,7 @@ const planos = [
       'Logo da sua loja na página de rastreio',
       'Todos os tons de voz',
       'Suporte prioritário',
-      'Acesso exclusivo ao grupo networking Polvo'
+      'Acesso exclusivo ao grupo networking polvo'
     ],
     current: false,
     upgrade: true,
