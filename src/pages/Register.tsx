@@ -14,6 +14,7 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState(false);
   const { signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -38,6 +39,9 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Reset email error state
+    setEmailError(false);
     
     if (password !== confirmPassword) {
       toast.error("As senhas não coincidem. Digite a mesma senha nos dois campos.");
@@ -64,10 +68,15 @@ const Register = () => {
     if (error) {
       console.error('Signup error:', error);
       
-      // Specific error message for existing email as requested
-      if (error.message === 'User already registered' || error.message.includes('already been registered')) {
+      // Check if it's a "user already exists" error
+      if (error.message === 'User already registered' || 
+          error.message.includes('already been registered') ||
+          error.message.includes('already registered') ||
+          error.message.includes('email address is already registered')) {
+        setEmailError(true);
         toast.error("❌ Este e-mail já está cadastrado. Tente fazer login ou redefinir sua senha.");
       } else if (error.message.includes('Invalid email')) {
+        setEmailError(true);
         toast.error("Email inválido. Verifique o formato do email.");
       } else if (error.message.includes('Password should be')) {
         toast.error("Senha muito fraca. Use pelo menos 8 caracteres incluindo letras maiúsculas, minúsculas, números e símbolos.");
@@ -76,10 +85,16 @@ const Register = () => {
       } else if (error.message.includes('signup is disabled')) {
         toast.error("Cadastro temporariamente desabilitado. Tente novamente mais tarde.");
       } else {
-        toast.error(`Erro: ${error.message}`);
+        // For any other error that might indicate the user already exists
+        if (error.message.toLowerCase().includes('user') && error.message.toLowerCase().includes('exist')) {
+          setEmailError(true);
+          toast.error("❌ Este e-mail já está cadastrado. Tente fazer login ou redefinir sua senha.");
+        } else {
+          toast.error(`Erro: ${error.message}`);
+        }
       }
     } else {
-      // Redirect to login with success message as requested
+      // Only show success message and redirect if there's no error
       navigate('/login');
       setTimeout(() => {
         toast.success("✅ Conta criada! Enviamos um e-mail de confirmação para você ativar seu acesso.");
@@ -106,9 +121,12 @@ const Register = () => {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setEmailError(false); // Clear error when user starts typing
+                }}
                 required
-                className="mt-1"
+                className={`mt-1 ${emailError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                 placeholder="seu@email.com"
               />
             </div>
