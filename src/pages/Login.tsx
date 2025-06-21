@@ -61,23 +61,10 @@ const Login = () => {
       if (error) {
         console.error('Login error:', error);
         
-        let errorMessage = 'Erro no login';
-        
-        if (error.message === 'Invalid login credentials') {
-          errorMessage = 'Email ou senha incorretos. Verifique suas credenciais e tente novamente.';
-        } else if (error.message === 'Email not confirmed') {
-          errorMessage = 'Email não confirmado. Verifique sua caixa de entrada e clique no link de confirmação antes de fazer login.';
-        } else if (error.message.includes('User not found') || error.message.includes('Invalid email')) {
-          errorMessage = 'Este email não está cadastrado ou as credenciais estão incorretas. Verifique seus dados ou faça seu cadastro.';
-        } else if (error.message.includes('Too many requests')) {
-          errorMessage = 'Muitas tentativas de login. Aguarde alguns minutos antes de tentar novamente.';
-        } else {
-          errorMessage = `Erro: ${error.message}`;
-        }
-        
+        // Simplified error message as requested
         toast({
-          title: "Erro no login",
-          description: errorMessage,
+          title: "❌ E-mail ou senha incorretos.",
+          description: "Verifique suas credenciais e tente novamente.",
           variant: "destructive",
         });
       } else {

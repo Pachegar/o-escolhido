@@ -73,34 +73,54 @@ const Register = () => {
     if (error) {
       console.error('Signup error:', error);
       
-      let errorMessage = 'Erro no cadastro';
-      
+      // Specific error message for existing email as requested
       if (error.message === 'User already registered' || error.message.includes('already been registered')) {
-        errorMessage = 'Este email já está cadastrado. Tente fazer login ou use outro email.';
+        toast({
+          title: "❌ Este e-mail já está cadastrado.",
+          description: "Tente fazer login ou redefinir sua senha.",
+          variant: "destructive",
+        });
       } else if (error.message.includes('Invalid email')) {
-        errorMessage = 'Email inválido. Verifique o formato do email.';
+        toast({
+          title: "Erro no cadastro",
+          description: "Email inválido. Verifique o formato do email.",
+          variant: "destructive",
+        });
       } else if (error.message.includes('Password should be')) {
-        errorMessage = 'Senha muito fraca. Use pelo menos 8 caracteres incluindo letras maiúsculas, minúsculas, números e símbolos.';
+        toast({
+          title: "Erro no cadastro",
+          description: "Senha muito fraca. Use pelo menos 8 caracteres incluindo letras maiúsculas, minúsculas, números e símbolos.",
+          variant: "destructive",
+        });
       } else if (error.message.includes('rate limit') || error.message.includes('too many')) {
-        errorMessage = 'Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.';
+        toast({
+          title: "Erro no cadastro",
+          description: "Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.",
+          variant: "destructive",
+        });
       } else if (error.message.includes('signup is disabled')) {
-        errorMessage = 'Cadastro temporariamente desabilitado. Tente novamente mais tarde.';
+        toast({
+          title: "Erro no cadastro",
+          description: "Cadastro temporariamente desabilitado. Tente novamente mais tarde.",
+          variant: "destructive",
+        });
       } else {
-        errorMessage = `Erro: ${error.message}`;
+        toast({
+          title: "Erro no cadastro",
+          description: `Erro: ${error.message}`,
+          variant: "destructive",
+        });
       }
-      
-      toast({
-        title: "Erro no cadastro",
-        description: errorMessage,
-        variant: "destructive",
-      });
     } else {
-      toast({
-        title: "Cadastro realizado com sucesso! 🎉",
-        description: "Um email de confirmação foi enviado para " + email + ". Clique no link no email para ativar sua conta antes de fazer login.",
-        duration: 10000,
-      });
+      // Redirect to login with success message as requested
       navigate('/login');
+      setTimeout(() => {
+        toast({
+          title: "✅ Conta criada!",
+          description: "Enviamos um e-mail de confirmação para você ativar seu acesso.",
+          duration: 10000,
+        });
+      }, 100);
     }
 
     setLoading(false);
@@ -141,7 +161,7 @@ const Register = () => {
               />
               {password && (
                 <div className="mt-2 p-3 bg-muted rounded-lg">
-                  <p className="text-xs text-white mb-2">Requisitos da senha:</p>
+                  <p className="text-xs text-white mb-2">A senha deve conter:</p>
                   <ul className="text-xs space-y-1">
                     <li className={passwordValidation.requirements.hasMinLength ? 'text-green-400' : 'text-red-400'}>
                       ✓ Pelo menos 8 caracteres
