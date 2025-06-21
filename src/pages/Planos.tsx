@@ -147,7 +147,7 @@ const Planos = () => {
               <CardHeader className="text-center">
                 <div className="text-4xl mb-2">
                   {plano.name === 'Peixe' && '🐟'}
-                  {plano.name === 'Cavalo-marinho' && '🦄'}
+                  {plano.name === 'Polvo' && '🐙'}
                   {plano.name === 'Golfinho' && '🐬'}
                   {plano.name === 'Tubarão' && '🦈'}
                 </div>
