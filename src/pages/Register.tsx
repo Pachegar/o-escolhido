@@ -29,20 +29,32 @@ const Register = () => {
       return;
     }
 
+    if (password.length < 6) {
+      toast({
+        title: "Erro",
+        description: "A senha deve ter pelo menos 6 caracteres",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     const { error } = await signUp(email, password);
 
     if (error) {
+      console.error('Signup error:', error);
       toast({
         title: "Erro no cadastro",
-        description: error.message,
+        description: error.message === 'User already registered' 
+          ? 'Este email já está cadastrado. Tente fazer login.'
+          : error.message,
         variant: "destructive",
       });
     } else {
       toast({
-        title: "Conta criada!",
-        description: "Verifique seu email para confirmar a conta",
+        title: "Conta criada com sucesso!",
+        description: "Verifique seu email para confirmar a conta antes de fazer login",
       });
       navigate('/login');
     }

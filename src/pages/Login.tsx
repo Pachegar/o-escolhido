@@ -23,12 +23,28 @@ const Login = () => {
     const { error } = await signIn(email, password);
 
     if (error) {
+      console.error('Login error:', error);
+      
+      let errorMessage = 'Erro no login';
+      
+      if (error.message === 'Invalid login credentials') {
+        errorMessage = 'Email ou senha incorretos. Verifique suas credenciais.';
+      } else if (error.message === 'Email not confirmed') {
+        errorMessage = 'Email não confirmado. Verifique sua caixa de entrada.';
+      } else {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Erro no login",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
     } else {
+      toast({
+        title: "Login realizado com sucesso!",
+        description: "Bem-vindo ao Pachegar",
+      });
       navigate('/dashboard');
     }
 
