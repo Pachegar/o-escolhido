@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/sonner';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -18,7 +18,6 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const { signIn, resetPassword } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,17 +41,9 @@ const Login = () => {
           errorMessage = `Erro: ${error.message}`;
         }
         
-        toast({
-          title: "Erro na recuperação de senha",
-          description: errorMessage,
-          variant: "destructive",
-        });
+        toast.error(errorMessage);
       } else {
-        toast({
-          title: "Email de recuperação enviado!",
-          description: "Verifique sua caixa de entrada e clique no link para redefinir sua senha. Você será redirecionado para a página de configurações para alterar sua senha.",
-          duration: 10000,
-        });
+        toast.success("Email de recuperação enviado! Verifique sua caixa de entrada e clique no link para redefinir sua senha. Você será redirecionado para a página de configurações para alterar sua senha.");
         setResetMode(false);
       }
     } else {
@@ -62,16 +53,9 @@ const Login = () => {
         console.error('Login error:', error);
         
         // Simplified error message as requested
-        toast({
-          title: "❌ E-mail ou senha incorretos.",
-          description: "Verifique suas credenciais e tente novamente.",
-          variant: "destructive",
-        });
+        toast.error("❌ E-mail ou senha incorretos. Verifique suas credenciais e tente novamente.");
       } else {
-        toast({
-          title: "Login realizado com sucesso!",
-          description: "Bem-vindo ao Pachegar",
-        });
+        toast.success("Login realizado com sucesso! Bem-vindo ao Pachegar");
         navigate('/dashboard');
       }
     }

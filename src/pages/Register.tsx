@@ -7,7 +7,7 @@ import { PasswordInput } from '@/components/ui/password-input';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/sonner';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -16,7 +16,6 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const validatePassword = (password: string) => {
     const hasLowercase = /[a-z]/.test(password);
@@ -41,11 +40,7 @@ const Register = () => {
     e.preventDefault();
     
     if (password !== confirmPassword) {
-      toast({
-        title: "Erro",
-        description: "As senhas não coincidem. Digite a mesma senha nos dois campos.",
-        variant: "destructive",
-      });
+      toast.error("As senhas não coincidem. Digite a mesma senha nos dois campos.");
       return;
     }
 
@@ -58,11 +53,7 @@ const Register = () => {
       if (!passwordValidation.requirements.hasNumber) missing.push('números');
       if (!passwordValidation.requirements.hasSymbol) missing.push('símbolos');
 
-      toast({
-        title: "Senha muito fraca",
-        description: `A senha deve conter: ${missing.join(', ')}.`,
-        variant: "destructive",
-      });
+      toast.error(`A senha deve conter: ${missing.join(', ')}.`);
       return;
     }
 
@@ -75,51 +66,23 @@ const Register = () => {
       
       // Specific error message for existing email as requested
       if (error.message === 'User already registered' || error.message.includes('already been registered')) {
-        toast({
-          title: "❌ Este e-mail já está cadastrado.",
-          description: "Tente fazer login ou redefinir sua senha.",
-          variant: "destructive",
-        });
+        toast.error("❌ Este e-mail já está cadastrado. Tente fazer login ou redefinir sua senha.");
       } else if (error.message.includes('Invalid email')) {
-        toast({
-          title: "Erro no cadastro",
-          description: "Email inválido. Verifique o formato do email.",
-          variant: "destructive",
-        });
+        toast.error("Email inválido. Verifique o formato do email.");
       } else if (error.message.includes('Password should be')) {
-        toast({
-          title: "Erro no cadastro",
-          description: "Senha muito fraca. Use pelo menos 8 caracteres incluindo letras maiúsculas, minúsculas, números e símbolos.",
-          variant: "destructive",
-        });
+        toast.error("Senha muito fraca. Use pelo menos 8 caracteres incluindo letras maiúsculas, minúsculas, números e símbolos.");
       } else if (error.message.includes('rate limit') || error.message.includes('too many')) {
-        toast({
-          title: "Erro no cadastro",
-          description: "Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.",
-          variant: "destructive",
-        });
+        toast.error("Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.");
       } else if (error.message.includes('signup is disabled')) {
-        toast({
-          title: "Erro no cadastro",
-          description: "Cadastro temporariamente desabilitado. Tente novamente mais tarde.",
-          variant: "destructive",
-        });
+        toast.error("Cadastro temporariamente desabilitado. Tente novamente mais tarde.");
       } else {
-        toast({
-          title: "Erro no cadastro",
-          description: `Erro: ${error.message}`,
-          variant: "destructive",
-        });
+        toast.error(`Erro: ${error.message}`);
       }
     } else {
       // Redirect to login with success message as requested
       navigate('/login');
       setTimeout(() => {
-        toast({
-          title: "✅ Conta criada!",
-          description: "Enviamos um e-mail de confirmação para você ativar seu acesso.",
-          duration: 10000,
-        });
+        toast.success("✅ Conta criada! Enviamos um e-mail de confirmação para você ativar seu acesso.");
       }, 100);
     }
 
