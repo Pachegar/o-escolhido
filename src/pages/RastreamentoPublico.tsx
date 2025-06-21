@@ -97,21 +97,23 @@ const RastreamentoPublico = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              {rastreamento.logo ? (
+              {rastreamento?.logo ? (
                 <img 
                   src={rastreamento.logo} 
                   alt="Logo" 
                   className="h-10 w-auto"
                 />
               ) : (
-                <div className="h-10 w-32 bg-primary rounded flex items-center justify-center">
-                  <span className="font-bold text-primary-foreground">Loja</span>
-                </div>
+                <img 
+                  src="/lovable-uploads/4abe2cf8-daf0-4fdb-ad47-074c17544f3c.png" 
+                  alt="Pachegar" 
+                  className="h-10 w-auto"
+                />
               )}
             </div>
             <div className="text-right">
               <h1 className="text-xl font-bold">Rastreamento</h1>
-              <p className="text-sm text-muted-foreground">{rastreamento.codigo}</p>
+              <p className="text-sm text-muted-foreground">{rastreamento?.codigo}</p>
             </div>
           </div>
         </div>

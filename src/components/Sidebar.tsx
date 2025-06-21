@@ -1,4 +1,3 @@
-
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
@@ -58,12 +57,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
       <div className="p-6 border-b border-border">
         <div className="flex items-center gap-3">
           <img 
-            src="/pachegar-logo-white.png" 
+            src="/lovable-uploads/4abe2cf8-daf0-4fdb-ad47-074c17544f3c.png" 
             alt="Pachegar" 
             className="h-8 w-auto"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-            }}
           />
           <div>
             <h1 className="text-2xl font-bold text-primary">Pachegar</h1>
