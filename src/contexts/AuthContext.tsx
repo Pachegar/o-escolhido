@@ -84,7 +84,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('Attempting sign up with:', email);
     setLoading(true);
     
-    const redirectUrl = `${window.location.origin}/`;
+    // Usar a URL atual da aplicação em vez de localhost
+    const redirectUrl = window.location.origin;
     
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -104,7 +105,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('Attempting password reset for:', email);
     setLoading(true);
     
-    const redirectUrl = `${window.location.origin}/`;
+    // Usar a URL atual da aplicação em vez de localhost para recuperação de senha
+    const redirectUrl = window.location.origin;
     
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl
