@@ -72,9 +72,9 @@ const Dashboard = () => {
             </div>
           )}
         </div>
-        <CardTitle className="text-3xl flex items-center gap-2 group-hover:text-primary transition-colors">
+        <CardTitle className="text-3xl flex items-center gap-2 group-hover:text-white transition-colors">
           <span className="text-2xl">{icon}</span>
-          {value}
+          <span className="text-white">{value}</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -100,7 +100,7 @@ const Dashboard = () => {
               className="h-10 w-auto"
             />
             <div>
-              <h1 className="text-3xl font-bold">Dashboard</h1>
+              <h1 className="text-3xl font-bold text-white">Dashboard</h1>
               <p className="text-muted-foreground">Visão geral da sua conta</p>
             </div>
           </div>
@@ -126,7 +126,7 @@ const Dashboard = () => {
               <div className="flex items-center gap-3">
                 <span className="text-2xl">⚠️</span>
                 <div>
-                  <p className="font-medium">Período de teste</p>
+                  <p className="font-medium text-white">Período de teste</p>
                   <p className="text-sm text-muted-foreground">
                     Restam {stats.trialDaysLeft} dias no seu período gratuito
                   </p>
@@ -180,11 +180,11 @@ const Dashboard = () => {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>Uso do Plano</CardTitle>
+                <CardTitle className="text-white">Uso do Plano</CardTitle>
                 <CardDescription>
                   {stats.planLimit - stats.remainingTrackings} de {stats.planLimit} utilizados
                   {stats.bonusTickets > 0 && (
-                    <span className="text-primary"> + {stats.bonusTickets} bônus</span>
+                    <span className="text-white"> + {stats.bonusTickets} bônus</span>
                   )}
                 </CardDescription>
               </div>
@@ -204,7 +204,7 @@ const Dashboard = () => {
               <span>{stats.remainingTrackings + stats.bonusTickets} restantes</span>
             </div>
             {stats.bonusTickets > 0 && (
-              <p className="text-xs text-primary mt-1">
+              <p className="text-xs text-white mt-1">
                 🎁 {stats.bonusTickets} rastreamentos bônus por indicações
               </p>
             )}
@@ -217,7 +217,7 @@ const Dashboard = () => {
             <Link to="/rastreamentos/criar">
               <CardContent className="p-6 text-center">
                 <div className="text-4xl mb-4">📦</div>
-                <h3 className="font-semibold mb-2">Novo Rastreamento</h3>
+                <h3 className="font-semibold mb-2 text-white">Novo Rastreamento</h3>
                 <p className="text-sm text-muted-foreground">
                   Criar um novo código de rastreamento
                 </p>
@@ -229,7 +229,7 @@ const Dashboard = () => {
             <Link to="/indicacoes">
               <CardContent className="p-6 text-center">
                 <div className="text-4xl mb-4">💰</div>
-                <h3 className="font-semibold mb-2">Indique e Ganhe</h3>
+                <h3 className="font-semibold mb-2 text-white">Indique e Ganhe</h3>
                 <p className="text-sm text-muted-foreground">
                   Convide amigos e ganhe rastreamentos extras
                 </p>
@@ -241,7 +241,7 @@ const Dashboard = () => {
             <Link to="/configuracoes">
               <CardContent className="p-6 text-center">
                 <div className="text-4xl mb-4">⚙️</div>
-                <h3 className="font-semibold mb-2">Configurações</h3>
+                <h3 className="font-semibold mb-2 text-white">Configurações</h3>
                 <p className="text-sm text-muted-foreground">
                   Personalizar sua conta
                 </p>

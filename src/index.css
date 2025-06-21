@@ -37,6 +37,25 @@
     @apply bg-background text-foreground font-sora;
     min-height: 100vh;
   }
+
+  /* Force all blue text to white */
+  .text-primary,
+  .text-blue-500,
+  .text-blue-600,
+  .text-blue-400,
+  [style*="color: rgb(1, 82, 248)"],
+  [style*="color: #0152F8"],
+  [style*="color: blue"] {
+    color: #FFFFFF !important;
+  }
+
+  /* Force hover states of blue text to white */
+  .hover\:text-primary:hover,
+  .group-hover\:text-primary,
+  .hover\:text-blue-500:hover,
+  .hover\:text-blue-600:hover {
+    color: #FFFFFF !important;
+  }
 }
 
 @layer components {
@@ -65,11 +84,11 @@
   .ocean-waves {
     background: linear-gradient(
       135deg,
-      rgba(1, 82, 248, 0.15) 0%,
-      rgba(1, 82, 248, 0.25) 25%,
-      rgba(1, 82, 248, 0.20) 50%,
-      rgba(1, 82, 248, 0.12) 75%,
-      rgba(1, 82, 248, 0.18) 100%
+      rgba(1, 82, 248, 0.20) 0%,
+      rgba(1, 82, 248, 0.35) 25%,
+      rgba(1, 82, 248, 0.28) 50%,
+      rgba(1, 82, 248, 0.18) 75%,
+      rgba(1, 82, 248, 0.25) 100%
     );
     background-size: 400% 400%;
     animation: ocean-drift 20s ease-in-out infinite;
@@ -87,7 +106,7 @@
     bottom: 0;
     background: radial-gradient(
       ellipse at top,
-      rgba(1, 82, 248, 0.25) 0%,
+      rgba(1, 82, 248, 0.35) 0%,
       transparent 70%
     );
     animation: ocean-pulse 15s ease-in-out infinite;
@@ -103,7 +122,7 @@
     background: linear-gradient(
       45deg,
       transparent 30%,
-      rgba(1, 82, 248, 0.12) 50%,
+      rgba(1, 82, 248, 0.18) 50%,
       transparent 70%
     );
     background-size: 200% 200%;
