@@ -3,8 +3,10 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 
@@ -13,6 +15,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [resetMode, setResetMode] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const { signIn, resetPassword } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -33,6 +36,8 @@ const Login = () => {
           errorMessage = 'Email inválido. Verifique o formato do email.';
         } else if (error.message.includes('User not found')) {
           errorMessage = 'Este email não está cadastrado. Verifique o email ou faça seu cadastro.';
+        } else if (error.message.includes('For security purposes')) {
+          errorMessage = 'Por motivos de segurança, só é possível solicitar recuperação de senha a cada 60 segundos.';
         } else {
           errorMessage = `Erro: ${error.message}`;
         }
@@ -45,13 +50,13 @@ const Login = () => {
       } else {
         toast({
           title: "Email de recuperação enviado!",
-          description: "Verifique sua caixa de entrada e clique no link para redefinir sua senha.",
-          duration: 8000,
+          description: "Verifique sua caixa de entrada e clique no link para redefinir sua senha. Você será redirecionado para a página de configurações para alterar sua senha.",
+          duration: 10000,
         });
         setResetMode(false);
       }
     } else {
-      const { error } = await signIn(email, password);
+      const { error } = await signIn(email, password, rememberMe);
 
       if (error) {
         console.error('Login error:', error);
@@ -62,12 +67,10 @@ const Login = () => {
           errorMessage = 'Email ou senha incorretos. Verifique suas credenciais e tente novamente.';
         } else if (error.message === 'Email not confirmed') {
           errorMessage = 'Email não confirmado. Verifique sua caixa de entrada e clique no link de confirmação antes de fazer login.';
-        } else if (error.message.includes('User not found')) {
-          errorMessage = 'Este email não está cadastrado. Faça seu cadastro primeiro.';
-        } else if (error.message.includes('Invalid email')) {
-          errorMessage = 'Email inválido. Verifique o formato do email.';
-        } else if (error.message.includes('Password')) {
-          errorMessage = 'Senha incorreta. Verifique sua senha e tente novamente.';
+        } else if (error.message.includes('User not found') || error.message.includes('Invalid email')) {
+          errorMessage = 'Este email não está cadastrado ou as credenciais estão incorretas. Verifique seus dados ou faça seu cadastro.';
+        } else if (error.message.includes('Too many requests')) {
+          errorMessage = 'Muitas tentativas de login. Aguarde alguns minutos antes de tentar novamente.';
         } else {
           errorMessage = `Erro: ${error.message}`;
         }
@@ -113,18 +116,29 @@ const Login = () => {
               />
             </div>
             {!resetMode && (
-              <div>
-                <Label htmlFor="password">Senha</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="mt-1"
-                  placeholder="Sua senha"
-                />
-              </div>
+              <>
+                <div>
+                  <Label htmlFor="password">Senha</Label>
+                  <PasswordInput
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="mt-1"
+                    placeholder="Sua senha"
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="remember-me"
+                    checked={rememberMe}
+                    onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                  />
+                  <Label htmlFor="remember-me" className="text-sm text-white">
+                    Lembrar-me neste dispositivo
+                  </Label>
+                </div>
+              </>
             )}
             <Button
               type="submit"

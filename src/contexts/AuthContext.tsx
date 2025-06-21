@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,10 +6,12 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<{ error: any }>;
   signUp: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: any }>;
+  updatePassword: (newPassword: string) => Promise<{ error: any }>;
+  updateEmail: (newEmail: string) => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -36,6 +37,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+
+        // Se o usuário acabou de fazer login via link de recuperação, redirecionar para configurações
+        if (event === 'SIGNED_IN' && session?.user && window.location.hash.includes('type=recovery')) {
+          window.location.href = '/configuracoes';
+        }
       }
     );
 
@@ -50,14 +56,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, []);
 
-  const signIn = async (email: string, password: string) => {
-    console.log('Attempting sign in with:', email);
+  const signIn = async (email: string, password: string, rememberMe: boolean = false) => {
+    console.log('Attempting sign in with:', email, 'Remember me:', rememberMe);
     setLoading(true);
     
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+
+    // Se "Remember me" não estiver marcado, configurar sessão para expirar mais cedo
+    if (!rememberMe && data.session) {
+      // Configurar para sessão mais curta (1 dia em vez do padrão)
+      localStorage.setItem('supabase.auth.token', JSON.stringify({
+        ...data.session,
+        expires_at: Date.now() + (24 * 60 * 60 * 1000) // 1 dia
+      }));
+    }
 
     console.log('Sign in result:', { data, error });
     setLoading(false);
@@ -101,6 +116,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error };
   };
 
+  const updatePassword = async (newPassword: string) => {
+    console.log('Attempting to update password');
+    setLoading(true);
+    
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+
+    console.log('Password update result:', { error });
+    setLoading(false);
+    
+    return { error };
+  };
+
+  const updateEmail = async (newEmail: string) => {
+    console.log('Attempting to update email to:', newEmail);
+    setLoading(true);
+    
+    const { error } = await supabase.auth.updateUser({
+      email: newEmail
+    });
+
+    console.log('Email update result:', { error });
+    setLoading(false);
+    
+    return { error };
+  };
+
   const signOut = async () => {
     console.log('Signing out');
     setLoading(true);
@@ -123,6 +166,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signUp,
     signOut,
     resetPassword,
+    updatePassword,
+    updateEmail,
   };
 
   return (

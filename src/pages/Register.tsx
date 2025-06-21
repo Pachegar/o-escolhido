@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,6 +18,25 @@ const Register = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const validatePassword = (password: string) => {
+    const hasLowercase = /[a-z]/.test(password);
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSymbol = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+    const hasMinLength = password.length >= 8;
+
+    return {
+      isValid: hasLowercase && hasUppercase && hasNumber && hasSymbol && hasMinLength,
+      requirements: {
+        hasLowercase,
+        hasUppercase,
+        hasNumber,
+        hasSymbol,
+        hasMinLength
+      }
+    };
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -29,10 +49,18 @@ const Register = () => {
       return;
     }
 
-    if (password.length < 6) {
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      const missing = [];
+      if (!passwordValidation.requirements.hasMinLength) missing.push('pelo menos 8 caracteres');
+      if (!passwordValidation.requirements.hasLowercase) missing.push('letras minúsculas');
+      if (!passwordValidation.requirements.hasUppercase) missing.push('letras maiúsculas');
+      if (!passwordValidation.requirements.hasNumber) missing.push('números');
+      if (!passwordValidation.requirements.hasSymbol) missing.push('símbolos');
+
       toast({
-        title: "Erro",
-        description: "A senha deve ter pelo menos 6 caracteres.",
+        title: "Senha muito fraca",
+        description: `A senha deve conter: ${missing.join(', ')}.`,
         variant: "destructive",
       });
       return;
@@ -47,14 +75,16 @@ const Register = () => {
       
       let errorMessage = 'Erro no cadastro';
       
-      if (error.message === 'User already registered') {
+      if (error.message === 'User already registered' || error.message.includes('already been registered')) {
         errorMessage = 'Este email já está cadastrado. Tente fazer login ou use outro email.';
       } else if (error.message.includes('Invalid email')) {
         errorMessage = 'Email inválido. Verifique o formato do email.';
-      } else if (error.message.includes('Password')) {
-        errorMessage = 'Senha muito fraca. Use pelo menos 6 caracteres.';
-      } else if (error.message.includes('rate limit')) {
+      } else if (error.message.includes('Password should be')) {
+        errorMessage = 'Senha muito fraca. Use pelo menos 8 caracteres incluindo letras maiúsculas, minúsculas, números e símbolos.';
+      } else if (error.message.includes('rate limit') || error.message.includes('too many')) {
         errorMessage = 'Muitas tentativas. Aguarde alguns minutos antes de tentar novamente.';
+      } else if (error.message.includes('signup is disabled')) {
+        errorMessage = 'Cadastro temporariamente desabilitado. Tente novamente mais tarde.';
       } else {
         errorMessage = `Erro: ${error.message}`;
       }
@@ -66,15 +96,17 @@ const Register = () => {
       });
     } else {
       toast({
-        title: "Cadastro realizado com sucesso!",
-        description: "Um email de confirmação foi enviado para sua caixa de entrada. Clique no link no email para ativar sua conta antes de fazer login.",
-        duration: 8000,
+        title: "Cadastro realizado com sucesso! 🎉",
+        description: "Um email de confirmação foi enviado para " + email + ". Clique no link no email para ativar sua conta antes de fazer login.",
+        duration: 10000,
       });
       navigate('/login');
     }
 
     setLoading(false);
   };
+
+  const passwordValidation = validatePassword(password);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
@@ -99,22 +131,41 @@ const Register = () => {
             </div>
             <div>
               <Label htmlFor="password">Senha</Label>
-              <Input
+              <PasswordInput
                 id="password"
-                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 className="mt-1"
-                placeholder="Mínimo 6 caracteres"
-                minLength={6}
+                placeholder="Crie uma senha forte"
               />
+              {password && (
+                <div className="mt-2 p-3 bg-muted rounded-lg">
+                  <p className="text-xs text-white mb-2">Requisitos da senha:</p>
+                  <ul className="text-xs space-y-1">
+                    <li className={passwordValidation.requirements.hasMinLength ? 'text-green-400' : 'text-red-400'}>
+                      ✓ Pelo menos 8 caracteres
+                    </li>
+                    <li className={passwordValidation.requirements.hasLowercase ? 'text-green-400' : 'text-red-400'}>
+                      ✓ Letras minúsculas
+                    </li>
+                    <li className={passwordValidation.requirements.hasUppercase ? 'text-green-400' : 'text-red-400'}>
+                      ✓ Letras maiúsculas
+                    </li>
+                    <li className={passwordValidation.requirements.hasNumber ? 'text-green-400' : 'text-red-400'}>
+                      ✓ Números
+                    </li>
+                    <li className={passwordValidation.requirements.hasSymbol ? 'text-green-400' : 'text-red-400'}>
+                      ✓ Símbolos (!@#$%^&* etc.)
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
             <div>
               <Label htmlFor="confirmPassword">Confirmar Senha</Label>
-              <Input
+              <PasswordInput
                 id="confirmPassword"
-                type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required

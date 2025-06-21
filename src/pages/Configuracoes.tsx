@@ -1,17 +1,19 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
 
 const Configuracoes = () => {
   const { toast } = useToast();
+  const { user, updatePassword, updateEmail } = useAuth();
   const [loading, setLoading] = useState(false);
   
   // Mock user plan - in real app this would come from auth context
@@ -34,6 +36,25 @@ const Configuracoes = () => {
     dominioCustomizado: ''
   });
 
+  // Account settings state
+  const [accountSettings, setAccountSettings] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: '',
+    newEmail: ''
+  });
+
+  // Check if user came from password recovery
+  useEffect(() => {
+    if (window.location.hash.includes('type=recovery')) {
+      toast({
+        title: "Redefinição de senha",
+        description: "Agora você pode alterar sua senha abaixo.",
+        duration: 8000,
+      });
+    }
+  }, [toast]);
+
   const handleSubmit = async (section: string) => {
     setLoading(true);
     
@@ -53,6 +74,99 @@ const Configuracoes = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    if (accountSettings.newPassword !== accountSettings.confirmNewPassword) {
+      toast({
+        title: "Erro",
+        description: "A nova senha e a confirmação não coincidem.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (accountSettings.newPassword.length < 8) {
+      toast({
+        title: "Erro",
+        description: "A nova senha deve ter pelo menos 8 caracteres.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    const { error } = await updatePassword(accountSettings.newPassword);
+
+    if (error) {
+      toast({
+        title: "Erro ao alterar senha",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Senha alterada com sucesso!",
+        description: "Sua senha foi atualizada.",
+      });
+      setAccountSettings(prev => ({
+        ...prev,
+        currentPassword: '',
+        newPassword: '',
+        confirmNewPassword: ''
+      }));
+    }
+
+    setLoading(false);
+  };
+
+  const handleEmailChange = async () => {
+    if (!accountSettings.newEmail) {
+      toast({
+        title: "Erro",
+        description: "Digite um novo email válido.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    const { error } = await updateEmail(accountSettings.newEmail);
+
+    if (error) {
+      toast({
+        title: "Erro ao alterar email",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Email sendo alterado!",
+        description: "Verifique sua caixa de entrada nos dois emails (atual e novo) para confirmar a alteração.",
+        duration: 10000,
+      });
+      setAccountSettings(prev => ({ ...prev, newEmail: '' }));
+    }
+
+    setLoading(false);
+  };
+
+  const handleCancelSubscription = () => {
+    const confirmed = window.confirm(
+      "Tem certeza que deseja cancelar sua assinatura? Você perderá acesso aos recursos premium ao final do período atual."
+    );
+
+    if (confirmed) {
+      // Here you would implement subscription cancellation
+      toast({
+        title: "Assinatura cancelada",
+        description: "Sua assinatura foi cancelada. Você ainda terá acesso aos recursos premium até o final do período atual.",
+        variant: "destructive",
+        duration: 10000,
+      });
     }
   };
 
@@ -85,6 +199,109 @@ const Configuracoes = () => {
           <h1 className="text-3xl font-bold text-white">Configurações da Conta</h1>
           <p className="text-muted-foreground">Personalize a aparência e comportamento da sua conta</p>
         </div>
+
+        {/* Account Security Section */}
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-white">Segurança da Conta</CardTitle>
+            <CardDescription>
+              Altere sua senha e email
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Change Password */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-white">Alterar Senha</h3>
+              <div className="grid grid-cols-1 gap-4">
+                <div>
+                  <Label htmlFor="new-password" className="text-white">Nova senha</Label>
+                  <PasswordInput
+                    id="new-password"
+                    value={accountSettings.newPassword}
+                    onChange={(e) => setAccountSettings(prev => ({ ...prev, newPassword: e.target.value }))}
+                    placeholder="Digite sua nova senha"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="confirm-new-password" className="text-white">Confirmar nova senha</Label>
+                  <PasswordInput
+                    id="confirm-new-password"
+                    value={accountSettings.confirmNewPassword}
+                    onChange={(e) => setAccountSettings(prev => ({ ...prev, confirmNewPassword: e.target.value }))}
+                    placeholder="Confirme sua nova senha"
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+              <Button
+                onClick={handlePasswordChange}
+                disabled={loading || !accountSettings.newPassword || !accountSettings.confirmNewPassword}
+                className="hover-button glow-button"
+              >
+                Alterar senha
+              </Button>
+            </div>
+
+            <Separator />
+
+            {/* Change Email */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-white">Alterar Email</h3>
+              <div>
+                <Label htmlFor="current-email" className="text-white">Email atual</Label>
+                <Input
+                  id="current-email"
+                  value={user?.email || ''}
+                  disabled
+                  className="mt-1 bg-muted"
+                />
+              </div>
+              <div>
+                <Label htmlFor="new-email" className="text-white">Novo email</Label>
+                <Input
+                  id="new-email"
+                  type="email"
+                  value={accountSettings.newEmail}
+                  onChange={(e) => setAccountSettings(prev => ({ ...prev, newEmail: e.target.value }))}
+                  placeholder="Digite seu novo email"
+                  className="mt-1"
+                />
+              </div>
+              <Button
+                onClick={handleEmailChange}
+                disabled={loading || !accountSettings.newEmail}
+                className="hover-button glow-button"
+              >
+                Alterar email
+              </Button>
+            </div>
+
+            <Separator />
+
+            {/* Cancel Subscription */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-white">Assinatura</h3>
+              <p className="text-sm text-muted-foreground">
+                Plano atual: <span className="font-medium text-white">{userPlan}</span>
+              </p>
+              <div className="flex gap-3">
+                <Link to="/planos">
+                  <Button variant="outline" className="hover-button">
+                    💎 Gerenciar plano
+                  </Button>
+                </Link>
+                <Button
+                  onClick={handleCancelSubscription}
+                  variant="destructive"
+                  className="hover-button"
+                >
+                  Cancelar assinatura
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Logo Section */}
         <Card className="glass-card">
