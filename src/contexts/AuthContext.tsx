@@ -1,7 +1,10 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { User } from '@supabase/supabase-js';
+
+interface User {
+  id: string;
+  email: string;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -26,41 +29,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
-
-    return () => subscription.unsubscribe();
+    // Simular carregamento inicial
+    const savedUser = localStorage.getItem('pachegar_user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+    setLoading(false);
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
+    // Simular login - aceita qualquer email/senha para demonstração
+    if (email && password) {
+      const mockUser = {
+        id: 'demo-user-' + Date.now(),
+        email: email,
+      };
+      setUser(mockUser);
+      localStorage.setItem('pachegar_user', JSON.stringify(mockUser));
+      return { error: null };
+    }
+    return { error: { message: 'Email e senha são obrigatórios' } };
   };
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    return { error };
+    // Simular cadastro - aceita qualquer email/senha para demonstração
+    if (email && password) {
+      const mockUser = {
+        id: 'demo-user-' + Date.now(),
+        email: email,
+      };
+      setUser(mockUser);
+      localStorage.setItem('pachegar_user', JSON.stringify(mockUser));
+      return { error: null };
+    }
+    return { error: { message: 'Email e senha são obrigatórios' } };
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    setUser(null);
+    localStorage.removeItem('pachegar_user');
   };
 
   const value = {
