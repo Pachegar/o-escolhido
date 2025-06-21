@@ -1,3 +1,4 @@
+
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -94,7 +95,7 @@ const Dashboard = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-4">
             <img 
-              src="/lovable-uploads/4abe2cf8-daf0-4fdb-ad47-074c17544f3c.png" 
+              src="/lovable-uploads/eb8d8e3b-2f97-4b6a-b22a-6a8273307baa.png" 
               alt="Pachegar" 
               className="h-10 w-auto"
             />

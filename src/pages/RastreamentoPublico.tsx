@@ -105,7 +105,7 @@ const RastreamentoPublico = () => {
                 />
               ) : (
                 <img 
-                  src="/lovable-uploads/4abe2cf8-daf0-4fdb-ad47-074c17544f3c.png" 
+                  src="/lovable-uploads/eb8d8e3b-2f97-4b6a-b22a-6a8273307baa.png" 
                   alt="Pachegar" 
                   className="h-10 w-auto"
                 />
