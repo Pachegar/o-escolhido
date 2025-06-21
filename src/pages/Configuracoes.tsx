@@ -158,47 +158,63 @@ const Configuracoes = () => {
   };
 
   const handleEmailChange = async () => {
-    if (!accountSettings.newEmail) {
+    console.log('handleEmailChange called with email:', accountSettings.newEmail);
+    console.log('Current user email:', user?.email);
+
+    // Validação básica: campo vazio
+    if (!accountSettings.newEmail || accountSettings.newEmail.trim() === '') {
+      console.log('Email field is empty');
       toast({
-        title: "Erro",
-        description: "Digite um novo email válido.",
+        title: "Campo obrigatório",
+        description: "Por favor, digite um endereço de email.",
         variant: "destructive",
       });
       return;
     }
 
+    // Validação de formato de email
     if (!validateEmail(accountSettings.newEmail)) {
+      console.log('Email format is invalid');
       toast({
-        title: "Erro",
+        title: "Email inválido",
         description: "Por favor, digite um endereço de email válido.",
         variant: "destructive",
       });
       return;
     }
 
+    // Verificar se o novo email é diferente do atual
     if (accountSettings.newEmail === user?.email) {
+      console.log('Email is the same as current');
       toast({
-        title: "Erro",
+        title: "Email já é o atual",
         description: "O novo email deve ser diferente do email atual.",
         variant: "destructive",
       });
       return;
     }
 
+    console.log('All validations passed, attempting to update email');
     setLoading(true);
 
     try {
       const { error } = await updateEmail(accountSettings.newEmail);
+      console.log('updateEmail result:', { error });
 
       if (error) {
+        console.error('Error updating email:', error);
+        
         let errorMessage = "Erro desconhecido ao alterar email.";
         
-        if (error.message.includes("already registered")) {
+        // Verificar diferentes tipos de erro
+        if (error.message.includes("already registered") || error.message.includes("User already registered")) {
           errorMessage = "Este email já está registrado em outra conta.";
-        } else if (error.message.includes("invalid")) {
+        } else if (error.message.includes("invalid") || error.message.includes("Invalid")) {
           errorMessage = "Endereço de email inválido.";
-        } else if (error.message.includes("rate limit")) {
+        } else if (error.message.includes("rate limit") || error.message.includes("Rate limit")) {
           errorMessage = "Muitas tentativas. Tente novamente em alguns minutos.";
+        } else if (error.message.includes("network") || error.message.includes("Network")) {
+          errorMessage = "Erro de conexão. Verifique sua internet e tente novamente.";
         } else {
           errorMessage = error.message;
         }
@@ -209,14 +225,18 @@ const Configuracoes = () => {
           variant: "destructive",
         });
       } else {
+        console.log('Email update successful');
         toast({
-          title: "Confirmação de alteração de email enviada!",
-          description: "Foram enviados emails de confirmação para seu email atual e para o novo email. Você precisa confirmar a alteração em ambos os emails para que a mudança seja efetivada.",
-          duration: 12000,
+          title: "Emails de confirmação enviados!",
+          description: `Foram enviados emails de confirmação para seu email atual (${user?.email}) e para o novo email (${accountSettings.newEmail}). Você precisa confirmar a alteração em ambos os emails para que a mudança seja efetivada.`,
+          duration: 15000,
         });
+        
+        // Limpar o campo após sucesso
         setAccountSettings(prev => ({ ...prev, newEmail: '' }));
       }
     } catch (error: any) {
+      console.error('Unexpected error in handleEmailChange:', error);
       toast({
         title: "Erro inesperado",
         description: "Ocorreu um erro inesperado. Tente novamente mais tarde.",
@@ -354,7 +374,7 @@ const Configuracoes = () => {
                 disabled={loading || !accountSettings.newEmail}
                 className="hover-button glow-button"
               >
-                Alterar email
+                {loading ? "Enviando..." : "Alterar email"}
               </Button>
             </div>
 
