@@ -15,9 +15,15 @@ const Configuracoes = () => {
   
   // Mock user plan - in real app this would come from auth context
   const userPlan = 'Polvo'; // or 'Peixe', 'Golfinho', 'Tubarão'
-  const canUploadLogo = ['Polvo', 'Golfinho', 'Tubarão'].includes(userPlan);
-  const canEditMessages = ['Golfinho', 'Tubarão'].includes(userPlan);
-  const canUseCustomDomain = userPlan === 'Tubarão';
+  
+  // Define plan permissions using arrays
+  const plansWithLogoUpload = ['Polvo', 'Golfinho', 'Tubarão'];
+  const plansWithMessageEditing = ['Golfinho', 'Tubarão'];
+  const plansWithCustomDomain = ['Tubarão'];
+  
+  const canUploadLogo = plansWithLogoUpload.includes(userPlan);
+  const canEditMessages = plansWithMessageEditing.includes(userPlan);
+  const canUseCustomDomain = plansWithCustomDomain.includes(userPlan);
   
   const [config, setConfig] = useState({
     logoUrl: '',
