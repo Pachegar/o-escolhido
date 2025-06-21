@@ -46,7 +46,7 @@ const planos = [
       '500 rastreamentos por mês',
       'Subdomínio personalizado na página de rastreio',
       'Relatório e análise de dados enviados mensalmente',
-      'Oferte OrderBump/UpSell/DownSell na página de rastreio',
+      'Oferte OrderBump/UpSell/DownSell na página de rastreio'
       'Automação de envio de rastreio pelo e-mail para o cliente',
       'Acesso exclusivo ao grupo networking golfinho'
     ],
