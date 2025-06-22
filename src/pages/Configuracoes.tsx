@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
@@ -9,13 +8,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { Link } from 'react-router-dom';
+import { Save } from 'lucide-react';
 
 const Configuracoes = () => {
   const { toast } = useToast();
   const { user, updatePassword, updateEmail } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [colorLoading, setColorLoading] = useState(false);
+  const [subdomainLoading, setSubdomainLoading] = useState(false);
+  const [domainLoading, setDomainLoading] = useState(false);
   
   // Mock user plan - in real app this would come from auth context
   const userPlan = 'Polvo'; // or 'Peixe', 'Golfinho', 'Tubarão'
@@ -101,6 +104,72 @@ const Configuracoes = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleColorSave = async () => {
+    setColorLoading(true);
+    
+    try {
+      // Here you would save color to Supabase
+      console.log('Saving color:', config.corDestaque);
+      
+      toast({
+        title: "Cor de destaque salva!",
+        description: "A cor foi atualizada com sucesso",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível salvar a cor de destaque",
+        variant: "destructive",
+      });
+    } finally {
+      setColorLoading(false);
+    }
+  };
+
+  const handleSubdomainSave = async () => {
+    setSubdomainLoading(true);
+    
+    try {
+      // Here you would save subdomain to Supabase
+      console.log('Saving subdomain:', config.subdominio);
+      
+      toast({
+        title: "Subdomínio salvo!",
+        description: "O subdomínio foi configurado com sucesso",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível salvar o subdomínio",
+        variant: "destructive",
+      });
+    } finally {
+      setSubdomainLoading(false);
+    }
+  };
+
+  const handleDomainSave = async () => {
+    setDomainLoading(true);
+    
+    try {
+      // Here you would save custom domain to Supabase
+      console.log('Saving custom domain:', config.dominioCustomizado);
+      
+      toast({
+        title: "Domínio customizado salvo!",
+        description: "O domínio foi configurado com sucesso",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível salvar o domínio customizado",
+        variant: "destructive",
+      });
+    } finally {
+      setDomainLoading(false);
     }
   };
 
@@ -545,9 +614,17 @@ const Configuracoes = () => {
                   disabled={!canUploadLogo}
                 />
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-muted-foreground mt-1 mb-3">
                 Personalize a cor dos botões e destaques nas páginas públicas
               </p>
+              <Button 
+                onClick={handleColorSave}
+                disabled={colorLoading || !canUploadLogo}
+                className="hover-button glow-button"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {colorLoading ? "Salvando..." : "Salvar cor"}
+              </Button>
             </div>
 
             <Separator />
@@ -573,9 +650,17 @@ const Configuracoes = () => {
                   <span className="text-sm text-muted-foreground">.rastreietrack.com.br</span>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-muted-foreground mt-1 mb-3">
                 Acesse através do link: minhaloja.rastreietrack.com.br
               </p>
+              <Button 
+                onClick={handleSubdomainSave}
+                disabled={subdomainLoading || !canEditMessages}
+                className="hover-button glow-button"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {subdomainLoading ? "Salvando..." : "Salvar subdomínio"}
+              </Button>
             </div>
 
             <Separator />
@@ -604,6 +689,16 @@ const Configuracoes = () => {
                   <strong>Atenção:</strong> O domínio próprio estará ativo em até 7 dias úteis. 
                   Verifique a disponibilidade antes em <a href="https://registro.br/" target="_blank" rel="noopener noreferrer" className="underline">https://registro.br/</a>
                 </p>
+              </div>
+              <div className="mt-3">
+                <Button 
+                  onClick={handleDomainSave}
+                  disabled={domainLoading || !canUseCustomDomain}
+                  className="hover-button glow-button"
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  {domainLoading ? "Salvando..." : "Salvar domínio"}
+                </Button>
               </div>
             </div>
 
