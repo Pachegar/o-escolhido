@@ -7,15 +7,17 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
+import { useDeliveryModels } from '@/hooks/useDeliveryModels';
 
 const ModelosEntrega = () => {
-  const { toast } = useToast();
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
+  const {
+    deliveryModels: modelos,
+    isLoading,
+    createDeliveryModel,
+    updateDeliveryModel,
+    deleteDeliveryModel
+  } = useDeliveryModels();
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingModel, setEditingModel] = useState<any>(null);
   const [formData, setFormData] = useState({
@@ -23,179 +25,18 @@ const ModelosEntrega = () => {
     diasEntrega: ''
   });
 
-  // Query para buscar modelos de entrega
-  const { data: modelos, isLoading, refetch } = useQuery({
-    queryKey: ['modelos-entrega', user?.id],
-    queryFn: async () => {
-      if (!user?.id) {
-        console.log('User not authenticated');
-        return [];
-      }
-
-      console.log('Fetching delivery models for user:', user.id);
-      
-      const { data, error } = await supabase
-        .from('delivery_models')
-        .select('*')
-        .or(`user_id.eq.${user.id},is_system_default.eq.true`)
-        .order('is_system_default', { ascending: false })
-        .order('name');
-
-      if (error) {
-        console.error('Error fetching delivery models:', error);
-        throw error;
-      }
-
-      console.log('Delivery models fetched:', data);
-      return data || [];
-    },
-    enabled: !!user?.id,
-  });
-
-  // Mutation para criar modelo
-  const createModelMutation = useMutation({
-    mutationFn: async (modelData: any) => {
-      if (!user?.id) {
-        throw new Error('User not authenticated');
-      }
-
-      console.log('Creating delivery model:', modelData);
-
-      const { data, error } = await supabase
-        .from('delivery_models')
-        .insert({
-          name: modelData.nome,
-          exact_delivery_days: parseInt(modelData.diasEntrega),
-          user_id: user.id,
-          qtde_eventos: 5, // Default value
-          niveis_utilizados: [1, 2, 3, 4, 5], // Default levels
-          is_system_default: false
-        })
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error creating delivery model:', error);
-        throw error;
-      }
-
-      console.log('Delivery model created:', data);
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['modelos-entrega'] });
-      toast({
-        title: "Modelo criado!",
-        description: "O modelo de entrega foi criado com sucesso",
-      });
-      setDialogOpen(false);
-      setEditingModel(null);
-      setFormData({ nome: '', diasEntrega: '' });
-    },
-    onError: (error: any) => {
-      console.error('Error creating model:', error);
-      toast({
-        title: "Erro",
-        description: error.message || "Não foi possível criar o modelo",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Mutation para atualizar modelo
-  const updateModelMutation = useMutation({
-    mutationFn: async ({ id, modelData }: { id: string; modelData: any }) => {
-      console.log('Updating delivery model:', id, modelData);
-
-      const { data, error } = await supabase
-        .from('delivery_models')
-        .update({
-          name: modelData.nome,
-          exact_delivery_days: parseInt(modelData.diasEntrega),
-        })
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error updating delivery model:', error);
-        throw error;
-      }
-
-      console.log('Delivery model updated:', data);
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['modelos-entrega'] });
-      toast({
-        title: "Modelo atualizado!",
-        description: "O modelo de entrega foi atualizado com sucesso",
-      });
-      setDialogOpen(false);
-      setEditingModel(null);
-      setFormData({ nome: '', diasEntrega: '' });
-    },
-    onError: (error: any) => {
-      console.error('Error updating model:', error);
-      toast({
-        title: "Erro",
-        description: error.message || "Não foi possível atualizar o modelo",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Mutation para deletar modelo
-  const deleteModelMutation = useMutation({
-    mutationFn: async (id: string) => {
-      console.log('Deleting delivery model:', id);
-
-      const { error } = await supabase
-        .from('delivery_models')
-        .delete()
-        .eq('id', id);
-
-      if (error) {
-        console.error('Error deleting delivery model:', error);
-        throw error;
-      }
-
-      console.log('Delivery model deleted:', id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['modelos-entrega'] });
-      toast({
-        title: "Modelo excluído!",
-        description: "O modelo foi removido com sucesso",
-      });
-    },
-    onError: (error: any) => {
-      console.error('Error deleting model:', error);
-      toast({
-        title: "Erro",
-        description: error.message || "Não foi possível excluir o modelo",
-        variant: "destructive",
-      });
-    },
-  });
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const diasNum = parseInt(formData.diasEntrega);
     if (diasNum < 1 || diasNum > 25) {
-      toast({
-        title: "Erro",
-        description: "O número de dias deve estar entre 1 e 25",
-        variant: "destructive",
-      });
       return;
     }
 
     if (editingModel) {
-      updateModelMutation.mutate({ id: editingModel.id, modelData: formData });
+      updateDeliveryModel.mutate({ id: editingModel.id, modelData: formData });
     } else {
-      createModelMutation.mutate(formData);
+      createDeliveryModel.mutate(formData);
     }
   };
 
@@ -203,7 +44,7 @@ const ModelosEntrega = () => {
     console.log('Editing model:', modelo);
     setEditingModel(modelo);
     setFormData({
-      nome: modelo.name,
+      nome: `Modelo ${modelo.exact_delivery_days} dias`,
       diasEntrega: modelo.exact_delivery_days.toString()
     });
     setDialogOpen(true);
@@ -211,7 +52,7 @@ const ModelosEntrega = () => {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Tem certeza que deseja excluir este modelo?')) return;
-    deleteModelMutation.mutate(id);
+    deleteDeliveryModel.mutate(id);
   };
 
   const handleDialogClose = () => {
@@ -304,9 +145,9 @@ const ModelosEntrega = () => {
                   <Button
                     type="submit"
                     className="flex-1 hover-button glow-button"
-                    disabled={createModelMutation.isPending || updateModelMutation.isPending}
+                    disabled={createDeliveryModel.isPending || updateDeliveryModel.isPending}
                   >
-                    {createModelMutation.isPending || updateModelMutation.isPending 
+                    {createDeliveryModel.isPending || updateDeliveryModel.isPending 
                       ? 'Salvando...' 
                       : editingModel ? 'Atualizar' : 'Criar'
                     }
@@ -334,7 +175,9 @@ const ModelosEntrega = () => {
                 <TableBody>
                   {modelos?.map((modelo) => (
                     <TableRow key={modelo.id}>
-                      <TableCell className="font-medium text-white">{modelo.name}</TableCell>
+                      <TableCell className="font-medium text-white">
+                        Modelo {modelo.exact_delivery_days} dias
+                      </TableCell>
                       <TableCell className="text-white">{modelo.exact_delivery_days} dias úteis</TableCell>
                       <TableCell className="text-white">
                         {modelo.is_system_default ? 'Sistema' : 'Personalizado'}
@@ -358,7 +201,7 @@ const ModelosEntrega = () => {
                             size="sm"
                             onClick={() => handleDelete(modelo.id)}
                             className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                            disabled={modelo.is_system_default || deleteModelMutation.isPending}
+                            disabled={modelo.is_system_default || deleteDeliveryModel.isPending}
                           >
                             🗑️
                           </Button>

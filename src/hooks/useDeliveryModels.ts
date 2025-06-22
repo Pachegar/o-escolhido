@@ -24,7 +24,7 @@ export const useDeliveryModels = () => {
         .select('*')
         .or(`user_id.eq.${user.id},is_system_default.eq.true`)
         .order('is_system_default', { ascending: false })
-        .order('name');
+        .order('id');
 
       if (error) {
         console.error('Error fetching delivery models:', error);
@@ -48,11 +48,10 @@ export const useDeliveryModels = () => {
       const { data, error } = await supabase
         .from('delivery_models')
         .insert({
-          name: modelData.nome,
           exact_delivery_days: parseInt(modelData.diasEntrega),
           user_id: user.id,
           qtde_eventos: 5,
-          niveis_utilizados: [1, 2, 3, 4, 5],
+          niveis_utilizados: ['1', '2', '3', '4', '5'],
           is_system_default: false
         })
         .select()
@@ -90,7 +89,6 @@ export const useDeliveryModels = () => {
       const { data, error } = await supabase
         .from('delivery_models')
         .update({
-          name: modelData.nome,
           exact_delivery_days: parseInt(modelData.diasEntrega),
         })
         .eq('id', id)
