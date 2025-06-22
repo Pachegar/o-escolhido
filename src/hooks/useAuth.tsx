@@ -28,9 +28,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
-        console.log('Session details:', session);
-        console.log('User ID:', session?.user?.id);
-        
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
@@ -40,9 +37,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       console.log('Initial session check:', session?.user?.email);
-      console.log('Initial session details:', session);
-      console.log('Initial user ID:', session?.user?.id);
-      
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -53,9 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     console.log('Attempting sign in for:', email);
-    setLoading(true);
-    
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -63,18 +55,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (error) {
       console.error('Sign in error:', error);
     } else {
-      console.log('Sign in successful:', data);
-      console.log('User after sign in:', data.user?.id);
+      console.log('Sign in successful');
     }
     
-    setLoading(false);
     return { error };
   };
 
   const signUp = async (email: string, password: string, metadata: any = {}) => {
     console.log('Attempting sign up for:', email);
-    setLoading(true);
-    
     const redirectUrl = `${window.location.origin}/`;
     
     const { data, error } = await supabase.auth.signUp({
@@ -89,11 +77,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (error) {
       console.error('Sign up error:', error);
     } else {
-      console.log('Sign up successful:', data);
-      console.log('User after sign up:', data.user?.id);
+      console.log('Sign up successful');
     }
     
-    setLoading(false);
     return { data, error };
   };
 
@@ -116,8 +102,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     console.log('Signing out');
-    setLoading(true);
-    
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.error('Sign out error:', error);
@@ -126,11 +110,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: "Ocorreu um erro ao fazer logout. Tente novamente.",
         variant: "destructive",
       });
-    } else {
-      console.log('Sign out successful');
     }
-    
-    setLoading(false);
   };
 
   const updateEmail = async (newEmail: string) => {

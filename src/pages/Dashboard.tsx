@@ -4,36 +4,45 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { SmartInsights } from '@/components/SmartInsights';
-import { Skeleton } from '@/components/ui/skeleton';
-import { DebugSupabase } from '@/components/DebugSupabase';
 import { Link } from 'react-router-dom';
-import { useDashboardStats } from '@/hooks/useSupabaseData';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { TrendingUp, TrendingDown, ArrowUpRight } from 'lucide-react';
 
 const Dashboard = () => {
-  const { user, loading: authLoading } = useAuth();
-  const { data: stats, isLoading, error } = useDashboardStats();
+  const { user } = useAuth();
 
-  console.log('Dashboard render - User:', user?.email, 'Loading:', isLoading, 'Error:', error);
+  const { data: stats, isLoading } = useQuery({
+    queryKey: ['dashboard-stats', user?.id],
+    queryFn: async () => {
+      // Mock data for demonstration
+      return {
+        totalActive: 45,
+        totalDelivered: 128,
+        totalClicks: 892,
+        remainingTrackings: 15,
+        planLimit: 60,
+        trialDaysLeft: 5,
+        bonusTickets: 45, // From referrals
+        monthlyComparison: {
+          totalActive: 12, // +12%
+          totalDelivered: -5, // -5%
+          totalClicks: 23 // +23%
+        }
+      };
+    },
+  });
 
-  // Estados de carregamento
-  if (authLoading || isLoading) {
+  if (isLoading || !stats) {
     return (
       <Layout>
         <div className="p-6">
-          <DebugSupabase />
           <div className="animate-pulse space-y-6">
-            <Skeleton className="h-8 w-64" />
+            <div className="h-8 bg-muted rounded w-64"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[...Array(4)].map((_, i) => (
-                <Skeleton key={i} className="h-32" />
-              ))}
-            </div>
-            <Skeleton className="h-32" />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[...Array(3)].map((_, i) => (
-                <Skeleton key={i} className="h-32" />
+                <div key={i} className="h-32 bg-muted rounded-lg"></div>
               ))}
             </div>
           </div>
@@ -42,83 +51,8 @@ const Dashboard = () => {
     );
   }
 
-  // Tratamento de erros
-  if (error) {
-    console.error('Dashboard error:', error);
-    return (
-      <Layout>
-        <div className="p-6">
-          <DebugSupabase />
-          <Card className="glass-card border-red-500/50 bg-red-500/10">
-            <CardContent className="p-6 text-center">
-              <div className="text-4xl mb-4">⚠️</div>
-              <h3 className="text-lg font-semibold mb-2 text-white">Erro ao carregar dados</h3>
-              <p className="text-muted-foreground mb-4">
-                Não foi possível carregar as informações do dashboard.
-              </p>
-              <div className="text-xs text-muted-foreground mb-4 font-mono">
-                Erro: {error.message}
-              </div>
-              <Button onClick={() => window.location.reload()} className="hover-button">
-                Recarregar página
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </Layout>
-    );
-  }
-
-  // Se não há usuário logado
-  if (!user) {
-    return (
-      <Layout>
-        <div className="p-6">
-          <DebugSupabase />
-          <Card className="glass-card">
-            <CardContent className="p-6 text-center">
-              <div className="text-4xl mb-4">🔐</div>
-              <h3 className="text-lg font-semibold mb-2 text-white">Acesso necessário</h3>
-              <p className="text-muted-foreground mb-4">
-                Faça login para acessar seu dashboard personalizado.
-              </p>
-              <Link to="/login">
-                <Button className="hover-button">
-                  Fazer login
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
-      </Layout>
-    );
-  }
-
-  // Se não há dados (possível erro na query)
-  if (!stats) {
-    return (
-      <Layout>
-        <div className="p-6">
-          <DebugSupabase />
-          <Card className="glass-card border-yellow-500/50 bg-yellow-500/10">
-            <CardContent className="p-6 text-center">
-              <div className="text-4xl mb-4">⚠️</div>
-              <h3 className="text-lg font-semibold mb-2 text-white">Dados não encontrados</h3>
-              <p className="text-muted-foreground mb-4">
-                Não foi possível carregar seus dados. Isso pode acontecer se sua conta ainda não foi totalmente configurada.
-              </p>
-              <Button onClick={() => window.location.reload()} className="hover-button">
-                Recarregar página
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </Layout>
-    );
-  }
-
-  const showUpgradePrompt = stats.usagePercentage >= 80;
-  const isNewUser = stats.totalActive === 0 && stats.totalDelivered === 0;
+  const usagePercentage = ((stats.planLimit - stats.remainingTrackings + stats.bonusTickets) / (stats.planLimit + stats.bonusTickets)) * 100;
+  const showUpgradePrompt = usagePercentage >= 80;
 
   const MetricCard = ({ title, value, description, trend, icon }: {
     title: string;
@@ -155,8 +89,6 @@ const Dashboard = () => {
   return (
     <Layout>
       <div className="p-6 space-y-6">
-        <DebugSupabase />
-        
         {/* Smart Insights */}
         <SmartInsights />
 
@@ -169,9 +101,7 @@ const Dashboard = () => {
             />
             <div>
               <h1 className="text-3xl font-bold text-white">Dashboard</h1>
-              <p className="text-muted-foreground">
-                {isNewUser ? 'Bem-vindo ao Pachegar!' : `Visão geral da sua conta`}
-              </p>
+              <p className="text-muted-foreground">Visão geral da sua conta</p>
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
@@ -189,38 +119,16 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Alerta para novos usuários */}
-        {isNewUser && (
-          <Card className="border-blue-500/50 bg-blue-500/10">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">🎉</span>
-                <div>
-                  <p className="font-medium text-white">Conta criada com sucesso!</p>
-                  <p className="text-sm text-muted-foreground">
-                    Você ainda não possui rastreamentos. Comece criando seu primeiro código de rastreamento.
-                  </p>
-                </div>
-                <Link to="/rastreamentos/criar" className="ml-auto">
-                  <Button variant="outline" size="sm" className="hover-button glow-button">
-                    Criar primeiro rastreamento
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Alerta de upgrade */}
-        {showUpgradePrompt && (
+        {/* Trial Alert */}
+        {stats.trialDaysLeft > 0 && (
           <Card className="border-yellow-500/50 bg-yellow-500/10">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
                 <span className="text-2xl">⚠️</span>
                 <div>
-                  <p className="font-medium text-white">Limite do plano quase atingido</p>
+                  <p className="font-medium text-white">Período de teste</p>
                   <p className="text-sm text-muted-foreground">
-                    Você está usando {stats.usagePercentage.toFixed(1)}% do seu plano. Considere fazer upgrade.
+                    Restam {stats.trialDaysLeft} dias no seu período gratuito
                   </p>
                 </div>
                 <Link to="/planos" className="ml-auto">
@@ -239,7 +147,7 @@ const Dashboard = () => {
             title="Rastreamentos Ativos"
             value={stats.totalActive}
             description="📦 Em andamento"
-            trend={stats.monthlyGrowth}
+            trend={stats.monthlyComparison.totalActive}
             icon="📦"
           />
 
@@ -247,6 +155,7 @@ const Dashboard = () => {
             title="Total Entregues"
             value={stats.totalDelivered}
             description="✅ Finalizados"
+            trend={stats.monthlyComparison.totalDelivered}
             icon="✅"
           />
 
@@ -254,13 +163,14 @@ const Dashboard = () => {
             title="Total de Cliques"
             value={stats.totalClicks}
             description="👆 Nos links públicos"
+            trend={stats.monthlyComparison.totalClicks}
             icon="👆"
           />
 
           <MetricCard
             title="Rastreamentos Restantes"
-            value={stats.remainingTrackings}
-            description={`De ${stats.planLimit}${stats.bonusCredits > 0 ? ` + ${stats.bonusCredits} bônus` : ''}`}
+            value={stats.remainingTrackings + stats.bonusTickets}
+            description={`De ${stats.planLimit} + ${stats.bonusTickets} bônus`}
             icon="🎯"
           />
         </div>
@@ -272,9 +182,9 @@ const Dashboard = () => {
               <div>
                 <CardTitle className="text-white">Uso do Plano</CardTitle>
                 <CardDescription>
-                  {(stats.totalActive + stats.totalDelivered)} de {stats.totalAllowed} utilizados
-                  {stats.bonusCredits > 0 && (
-                    <span className="text-white"> (incluindo {stats.bonusCredits} bônus)</span>
+                  {stats.planLimit - stats.remainingTrackings} de {stats.planLimit} utilizados
+                  {stats.bonusTickets > 0 && (
+                    <span className="text-white"> + {stats.bonusTickets} bônus</span>
                   )}
                 </CardDescription>
               </div>
@@ -288,14 +198,14 @@ const Dashboard = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <Progress value={Math.min(stats.usagePercentage, 100)} className="h-3" />
+            <Progress value={usagePercentage} className="h-3" />
             <div className="flex justify-between text-sm text-muted-foreground mt-2">
-              <span>{stats.usagePercentage.toFixed(1)}% utilizado</span>
-              <span>{stats.remainingTrackings} restantes</span>
+              <span>{usagePercentage.toFixed(1)}% utilizado</span>
+              <span>{stats.remainingTrackings + stats.bonusTickets} restantes</span>
             </div>
-            {stats.bonusCredits > 0 && (
+            {stats.bonusTickets > 0 && (
               <p className="text-xs text-white mt-1">
-                🎁 {stats.bonusCredits} rastreamentos bônus por indicações
+                🎁 {stats.bonusTickets} rastreamentos bônus por indicações
               </p>
             )}
           </CardContent>

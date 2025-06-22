@@ -180,7 +180,6 @@ export type Database = {
       }
       plans: {
         Row: {
-          can_customize_color: boolean | null
           can_customize_logo: boolean | null
           can_customize_tone: boolean | null
           can_edit_messages: boolean | null
@@ -197,7 +196,6 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
-          can_customize_color?: boolean | null
           can_customize_logo?: boolean | null
           can_customize_tone?: boolean | null
           can_edit_messages?: boolean | null
@@ -214,7 +212,6 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
-          can_customize_color?: boolean | null
           can_customize_logo?: boolean | null
           can_customize_tone?: boolean | null
           can_edit_messages?: boolean | null

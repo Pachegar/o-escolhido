@@ -7,29 +7,49 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useDeliveryModels, useCreateDeliveryModel, useUpdateDeliveryModel, useDeleteDeliveryModel } from '@/hooks/useSupabaseData';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from '@/hooks/use-toast';
+import { useQuery } from '@tanstack/react-query';
+import { useToast } from '@/hooks/use-toast';
 
 const ModelosEntrega = () => {
-  const { user } = useAuth();
-  const { data: modelos, isLoading, error } = useDeliveryModels();
-  const createModel = useCreateDeliveryModel();
-  const updateModel = useUpdateDeliveryModel();
-  const deleteModel = useDeleteDeliveryModel();
-  
+  const { toast } = useToast();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingModel, setEditingModel] = useState<any>(null);
   const [formData, setFormData] = useState({
-    name: '',
-    exact_delivery_days: ''
+    nome: '',
+    diasEntrega: ''
+  });
+
+  const { data: modelos, isLoading, refetch } = useQuery({
+    queryKey: ['modelos-entrega'],
+    queryFn: async () => {
+      // Mock data for demonstration
+      return [
+        {
+          id: '1',
+          nome: 'Express',
+          dias_entrega: 3,
+          created_at: '2024-01-15'
+        },
+        {
+          id: '2',
+          nome: 'Normal',
+          dias_entrega: 7,
+          created_at: '2024-01-15'
+        },
+        {
+          id: '3',
+          nome: 'Econômico',
+          dias_entrega: 15,
+          created_at: '2024-01-15'
+        }
+      ];
+    },
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const diasNum = parseInt(formData.exact_delivery_days);
+    const diasNum = parseInt(formData.diasEntrega);
     if (diasNum < 1 || diasNum > 25) {
       toast({
         title: "Erro",
@@ -39,34 +59,33 @@ const ModelosEntrega = () => {
       return;
     }
     
-    const modelData = {
-      name: formData.name,
-      exact_delivery_days: diasNum,
-      qtde_eventos: Math.min(diasNum, 10), // Máximo de 10 eventos
-      niveis_utilizados: ['nivel_1', 'nivel_2', 'nivel_3'], // Valores padrão
-      is_system_default: false
-    };
-
     try {
-      if (editingModel) {
-        await updateModel.mutateAsync({ id: editingModel.id, data: modelData });
-      } else {
-        await createModel.mutateAsync(modelData);
-      }
+      // Here you would save to Supabase
+      console.log('Saving model:', formData);
+      
+      toast({
+        title: editingModel ? "Modelo atualizado!" : "Modelo criado!",
+        description: "As informações foram salvas com sucesso",
+      });
       
       setDialogOpen(false);
       setEditingModel(null);
-      setFormData({ name: '', exact_delivery_days: '' });
+      setFormData({ nome: '', diasEntrega: '' });
+      refetch();
     } catch (error) {
-      console.error('Error saving model:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível salvar o modelo",
+        variant: "destructive",
+      });
     }
   };
 
   const handleEdit = (modelo: any) => {
     setEditingModel(modelo);
     setFormData({
-      name: modelo.name,
-      exact_delivery_days: modelo.exact_delivery_days.toString()
+      nome: modelo.nome,
+      diasEntrega: modelo.dias_entrega.toString()
     });
     setDialogOpen(true);
   };
@@ -75,79 +94,42 @@ const ModelosEntrega = () => {
     if (!confirm('Tem certeza que deseja excluir este modelo?')) return;
     
     try {
-      await deleteModel.mutateAsync(id);
+      // Here you would delete from Supabase
+      console.log('Deleting model:', id);
+      
+      toast({
+        title: "Modelo excluído!",
+        description: "O modelo foi removido com sucesso",
+      });
+      
+      refetch();
     } catch (error) {
-      console.error('Error deleting model:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível excluir o modelo",
+        variant: "destructive",
+      });
     }
   };
 
   const handleDialogClose = () => {
     setDialogOpen(false);
     setEditingModel(null);
-    setFormData({ name: '', exact_delivery_days: '' });
+    setFormData({ nome: '', diasEntrega: '' });
   };
 
-  // Estados de carregamento
   if (isLoading) {
     return (
       <Layout>
         <div className="p-6">
           <div className="animate-pulse space-y-6">
-            <Skeleton className="h-8 w-64" />
-            <Skeleton className="h-96" />
+            <div className="h-8 bg-muted rounded w-64"></div>
+            <div className="h-96 bg-muted rounded-lg"></div>
           </div>
         </div>
       </Layout>
     );
   }
-
-  // Tratamento de erros
-  if (error) {
-    return (
-      <Layout>
-        <div className="p-6">
-          <Card className="glass-card border-red-500/50 bg-red-500/10">
-            <CardContent className="p-6 text-center">
-              <div className="text-4xl mb-4">⚠️</div>
-              <h3 className="text-lg font-semibold mb-2 text-white">Erro ao carregar modelos</h3>
-              <p className="text-muted-foreground mb-4">
-                Não foi possível carregar os modelos de entrega. Tente recarregar a página.
-              </p>
-              <Button onClick={() => window.location.reload()} className="hover-button">
-                Recarregar página
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </Layout>
-    );
-  }
-
-  // Se não há usuário logado
-  if (!user) {
-    return (
-      <Layout>
-        <div className="p-6">
-          <Card className="glass-card">
-            <CardContent className="p-6 text-center">
-              <div className="text-4xl mb-4">🔐</div>
-              <h3 className="text-lg font-semibold mb-2 text-white">Acesso necessário</h3>
-              <p className="text-muted-foreground mb-4">
-                Faça login para acessar seus modelos de entrega.
-              </p>
-              <Button className="hover-button">
-                Fazer login
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </Layout>
-    );
-  }
-
-  // Separar modelos do sistema dos modelos do usuário
-  const modelosDoSistema = modelos?.filter(m => m.is_system_default) || [];
-  const modelosDoUsuario = modelos?.filter(m => !m.is_system_default) || [];
 
   return (
     <Layout>
@@ -155,12 +137,7 @@ const ModelosEntrega = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold text-white">Modelos de Entrega</h1>
-            <p className="text-muted-foreground">
-              {modelosDoUsuario.length === 0 
-                ? 'Configure seus primeiros prazos de entrega' 
-                : `Configure os prazos de entrega para seus rastreamentos`
-              }
-            </p>
+            <p className="text-muted-foreground">Configure os prazos de entrega para seus rastreamentos</p>
           </div>
           
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -184,11 +161,11 @@ const ModelosEntrega = () => {
               
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <Label htmlFor="name" className="text-white">Nome do Modelo</Label>
+                  <Label htmlFor="nome" className="text-white">Nome do Modelo</Label>
                   <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    id="nome"
+                    value={formData.nome}
+                    onChange={(e) => setFormData(prev => ({ ...prev, nome: e.target.value }))}
                     placeholder="Ex: Express, Normal, Econômico"
                     required
                     className="mt-1"
@@ -196,14 +173,14 @@ const ModelosEntrega = () => {
                 </div>
                 
                 <div>
-                  <Label htmlFor="exact_delivery_days" className="text-white">Dias para entrega (1-25 dias úteis)</Label>
+                  <Label htmlFor="diasEntrega" className="text-white">Dias para entrega (1-25 dias úteis)</Label>
                   <Input
-                    id="exact_delivery_days"
+                    id="diasEntrega"
                     type="number"
                     min="1"
                     max="25"
-                    value={formData.exact_delivery_days}
-                    onChange={(e) => setFormData(prev => ({ ...prev, exact_delivery_days: e.target.value }))}
+                    value={formData.diasEntrega}
+                    onChange={(e) => setFormData(prev => ({ ...prev, diasEntrega: e.target.value }))}
                     placeholder="7"
                     required
                     className="mt-1"
@@ -225,7 +202,6 @@ const ModelosEntrega = () => {
                   <Button
                     type="submit"
                     className="flex-1 hover-button glow-button"
-                    disabled={createModel.isPending || updateModel.isPending}
                   >
                     {editingModel ? 'Atualizar' : 'Criar'}
                   </Button>
@@ -235,100 +211,57 @@ const ModelosEntrega = () => {
           </Dialog>
         </div>
 
-        {/* Modelos do Sistema */}
-        {modelosDoSistema.length > 0 && (
-          <Card className="glass-card">
-            <CardHeader>
-              <CardTitle className="text-white">Modelos do Sistema</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Modelos pré-configurados disponíveis para todos os usuários
-              </p>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-white">Nome</TableHead>
-                      <TableHead className="text-white">Prazo de Entrega</TableHead>
-                      <TableHead className="text-white">Tipo</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {modelosDoSistema.map((modelo) => (
-                      <TableRow key={modelo.id}>
-                        <TableCell className="font-medium text-white">{modelo.name}</TableCell>
-                        <TableCell className="text-white">{modelo.exact_delivery_days} dias úteis</TableCell>
-                        <TableCell className="text-white">
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-500/20 text-blue-300">
-                            Sistema
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Modelos do Usuário */}
+        {/* Models Table */}
         <Card className="glass-card">
-          <CardHeader>
-            <CardTitle className="text-white">Seus Modelos Personalizados</CardTitle>
-          </CardHeader>
           <CardContent className="p-0">
-            {modelosDoUsuario.length > 0 ? (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-white">Nome</TableHead>
-                      <TableHead className="text-white">Prazo de Entrega</TableHead>
-                      <TableHead className="text-white">Criado em</TableHead>
-                      <TableHead className="text-white">Ações</TableHead>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-white">Nome</TableHead>
+                    <TableHead className="text-white">Prazo de Entrega</TableHead>
+                    <TableHead className="text-white">Criado em</TableHead>
+                    <TableHead className="text-white">Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {modelos?.map((modelo) => (
+                    <TableRow key={modelo.id}>
+                      <TableCell className="font-medium text-white">{modelo.nome}</TableCell>
+                      <TableCell className="text-white">{modelo.dias_entrega} dias úteis</TableCell>
+                      <TableCell className="text-white">{new Date(modelo.created_at).toLocaleDateString('pt-BR')}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEdit(modelo)}
+                            className="hover-button"
+                          >
+                            ✏️
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDelete(modelo.id)}
+                            className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                          >
+                            🗑️
+                          </Button>
+                        </div>
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {modelosDoUsuario.map((modelo) => (
-                      <TableRow key={modelo.id}>
-                        <TableCell className="font-medium text-white">{modelo.name}</TableCell>
-                        <TableCell className="text-white">{modelo.exact_delivery_days} dias úteis</TableCell>
-                        <TableCell className="text-white">{new Date(modelo.created_at).toLocaleDateString('pt-BR')}</TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleEdit(modelo)}
-                              className="hover-button"
-                              disabled={updateModel.isPending}
-                            >
-                              ✏️
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleDelete(modelo.id)}
-                              className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                              disabled={deleteModel.isPending}
-                            >
-                              🗑️
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            ) : (
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            {modelos?.length === 0 && (
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">🚛</div>
-                <h3 className="text-lg font-semibold mb-2 text-white">Nenhum modelo personalizado criado</h3>
+                <h3 className="text-lg font-semibold mb-2 text-white">Nenhum modelo criado</h3>
                 <p className="text-muted-foreground mb-4">
-                  Crie seu primeiro modelo de entrega personalizado para começar a usar prazos específicos do seu negócio.
+                  Crie seu primeiro modelo de entrega para começar
                 </p>
                 <Button 
                   className="hover-button glow-button"
@@ -351,8 +284,7 @@ const ModelosEntrega = () => {
                 <p className="text-sm text-muted-foreground">
                   Os modelos de entrega definem o prazo exato que será utilizado para gerar 
                   automaticamente a linha do tempo dos rastreamentos. O sistema criará eventos 
-                  realistas distribuídos ao longo do período configurado. Você pode usar tanto 
-                  os modelos do sistema quanto criar seus próprios modelos personalizados.
+                  realistas distribuídos ao longo do período configurado.
                 </p>
               </div>
             </div>
