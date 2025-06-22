@@ -226,11 +226,56 @@ export const useUserStats = () => {
     queryFn: async () => {
       if (!user?.id) return null;
       
-      const { data, error } = await supabase
-        .rpc('get_user_stats', { user_id: user.id });
+      // Fetch user data with plan info
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select(`
+          referral_credits,
+          plans:current_plan_id(tracking_limit)
+        `)
+        .eq('id', user.id)
+        .single();
       
-      if (error) throw error;
-      return data?.[0] || null;
+      if (userError) throw userError;
+      
+      // Fetch trackings count
+      const { count: totalTrackings, error: trackingsError } = await supabase
+        .from('trackings')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+      
+      if (trackingsError) throw trackingsError;
+      
+      // Fetch total clicks
+      const { data: clicksData, error: clicksError } = await supabase
+        .from('trackings')
+        .select('clicks')
+        .eq('user_id', user.id);
+      
+      if (clicksError) throw clicksError;
+      
+      const totalClicks = clicksData?.reduce((sum, tracking) => sum + (tracking.clicks || 0), 0) || 0;
+      
+      // Fetch current month trackings
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
+      
+      const { count: currentMonthTrackings, error: monthError } = await supabase
+        .from('trackings')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .gte('created_at', startOfMonth.toISOString());
+      
+      if (monthError) throw monthError;
+      
+      return {
+        total_trackings: totalTrackings || 0,
+        total_clicks: totalClicks,
+        current_month_trackings: currentMonthTrackings || 0,
+        referral_credits: userData?.referral_credits || 0,
+        plan_limit: userData?.plans?.tracking_limit || null
+      };
     },
     enabled: !!user?.id,
   });
