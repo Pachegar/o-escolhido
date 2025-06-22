@@ -36,14 +36,26 @@ export const getPublicTracking = async (trackingCode: string) => {
 // Função para incrementar cliques no rastreamento
 export const incrementTrackingClicks = async (trackingId: string) => {
   try {
-    // Usar uma query SQL simples para incrementar cliques
-    const { error } = await supabase
+    // First get the current clicks value
+    const { data: currentData, error: fetchError } = await supabase
       .from('trackings')
-      .update({ clicks: supabase.sql`clicks + 1` })
+      .select('clicks')
+      .eq('id', trackingId)
+      .single();
+    
+    if (fetchError) {
+      console.error('Error fetching current clicks:', fetchError);
+      return;
+    }
+    
+    // Then update with incremented value
+    const { error: updateError } = await supabase
+      .from('trackings')
+      .update({ clicks: (currentData.clicks || 0) + 1 })
       .eq('id', trackingId);
     
-    if (error) {
-      console.error('Error incrementing clicks:', error);
+    if (updateError) {
+      console.error('Error incrementing clicks:', updateError);
     }
   } catch (error) {
     console.error('Error incrementing clicks:', error);
