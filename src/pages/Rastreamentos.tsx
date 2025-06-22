@@ -8,77 +8,50 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '@/contexts/AuthContext';
+import { useTrackings, useDeleteTracking } from '@/hooks/useSupabaseData';
+import { useToast } from '@/hooks/use-toast';
 
 const Rastreamentos = () => {
-  const { user } = useAuth();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('todos');
   const [cityFilter, setCityFilter] = useState('');
 
-  const { data: rastreamentos, isLoading } = useQuery({
-    queryKey: ['rastreamentos', user?.id],
-    queryFn: async () => {
-      // Mock data for demonstration
-      return [
-        {
-          id: '1',
-          codigo: 'BR123456789',
-          cliente: 'João Silva',
-          cidade: 'São Paulo',
-          estado: 'SP',
-          status: 'em_transito',
-          created_at: '2024-01-15',
-          clicks: 23
-        },
-        {
-          id: '2',
-          codigo: 'BR987654321',
-          cliente: 'Maria Santos',
-          cidade: 'Rio de Janeiro',
-          estado: 'RJ',
-          status: 'eminente_entrega',
-          created_at: '2024-01-14',
-          clicks: 45
-        },
-        {
-          id: '3',
-          codigo: 'BR456789123',
-          cliente: 'Pedro Oliveira',
-          cidade: 'Belo Horizonte',
-          estado: 'MG',
-          status: 'postado',
-          created_at: '2024-01-16',
-          clicks: 12
-        }
-      ];
-    },
-  });
+  const { data: rastreamentos, isLoading } = useTrackings();
+  const deleteTrackingMutation = useDeleteTracking();
 
   const getStatusBadge = (status: string) => {
     const variants = {
-      postado: { label: 'Postado', variant: 'secondary' as const },
-      em_transito: { label: 'Em trânsito', variant: 'default' as const },
-      eminente_entrega: { label: 'Eminente Entrega', variant: 'default' as const },
-      em_atraso: { label: 'Em Atraso', variant: 'destructive' as const }
+      'Postado': { label: 'Postado', variant: 'secondary' as const },
+      'Em trânsito': { label: 'Em trânsito', variant: 'default' as const },
+      'Eminente Entrega': { label: 'Eminente Entrega', variant: 'default' as const },
+      'Em Atraso': { label: 'Em Atraso', variant: 'destructive' as const },
+      'Entregue': { label: 'Entregue', variant: 'default' as const }
     };
     
-    const config = variants[status as keyof typeof variants] || variants.postado;
+    const config = variants[status as keyof typeof variants] || variants['Postado'];
     return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
   const copyLink = (codigo: string) => {
-    const link = `https://rastreietrack.com.br/r/${codigo}`;
+    const link = `${window.location.origin}/r/${codigo}`;
     navigator.clipboard.writeText(link);
-    // You could add a toast notification here
+    toast({
+      title: "Link copiado!",
+      description: "O link de rastreamento foi copiado para a área de transferência.",
+    });
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Tem certeza que deseja excluir este rastreamento?')) return;
+    deleteTrackingMutation.mutate(id);
   };
 
   const filteredRastreamentos = rastreamentos?.filter((item) => {
-    const matchesSearch = item.cliente.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.codigo.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'todos' || item.status === statusFilter;
-    const matchesCity = !cityFilter || item.cidade.toLowerCase().includes(cityFilter.toLowerCase());
+    const matchesSearch = item.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.tracking_code.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'todos' || item.current_status === statusFilter;
+    const matchesCity = !cityFilter || item.destination_city.toLowerCase().includes(cityFilter.toLowerCase());
     
     return matchesSearch && matchesStatus && matchesCity;
   }) || [];
@@ -130,10 +103,11 @@ const Rastreamentos = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="todos">Todos os status</SelectItem>
-                  <SelectItem value="postado">Postado</SelectItem>
-                  <SelectItem value="em_transito">Em trânsito</SelectItem>
-                  <SelectItem value="eminente_entrega">Eminente Entrega</SelectItem>
-                  <SelectItem value="em_atraso">Em Atraso</SelectItem>
+                  <SelectItem value="Postado">Postado</SelectItem>
+                  <SelectItem value="Em trânsito">Em trânsito</SelectItem>
+                  <SelectItem value="Eminente Entrega">Eminente Entrega</SelectItem>
+                  <SelectItem value="Em Atraso">Em Atraso</SelectItem>
+                  <SelectItem value="Entregue">Entregue</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -177,11 +151,11 @@ const Rastreamentos = () => {
                 <TableBody>
                   {filteredRastreamentos.map((item) => (
                     <TableRow key={item.id}>
-                      <TableCell className="font-mono text-white">{item.codigo}</TableCell>
-                      <TableCell className="text-white">{item.cliente}</TableCell>
-                      <TableCell className="text-white">{item.cidade}, {item.estado}</TableCell>
-                      <TableCell>{getStatusBadge(item.status)}</TableCell>
-                      <TableCell className="text-white">{item.clicks}</TableCell>
+                      <TableCell className="font-mono text-white">{item.tracking_code}</TableCell>
+                      <TableCell className="text-white">{item.customer_name}</TableCell>
+                      <TableCell className="text-white">{item.destination_city}, {item.destination_state}</TableCell>
+                      <TableCell>{getStatusBadge(item.current_status)}</TableCell>
+                      <TableCell className="text-white">{item.clicks || 0}</TableCell>
                       <TableCell className="text-white">{new Date(item.created_at).toLocaleDateString('pt-BR')}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
@@ -198,10 +172,19 @@ const Rastreamentos = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => copyLink(item.codigo)}
+                            onClick={() => copyLink(item.tracking_code)}
                             className="hover-button"
                           >
                             🔗
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDelete(item.id)}
+                            className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                            disabled={deleteTrackingMutation.isPending}
+                          >
+                            🗑️
                           </Button>
                         </div>
                       </TableCell>

@@ -55,26 +55,19 @@ export const useTrackings = () => {
   });
 };
 
-// Hook para buscar modelos de entrega
-export const useDeliveryModels = () => {
-  const { user } = useAuth();
-  
+// Hook para buscar planos disponíveis
+export const usePlans = () => {
   return useQuery({
-    queryKey: ['deliveryModels', user?.id],
+    queryKey: ['plans'],
     queryFn: async () => {
-      if (!user?.id) return [];
-      
       const { data, error } = await supabase
-        .from('delivery_models')
+        .from('plans')
         .select('*')
-        .or(`user_id.eq.${user.id},is_system_default.eq.true`)
-        .order('is_system_default', { ascending: false })
-        .order('name');
+        .order('monthly_price');
       
       if (error) throw error;
       return data || [];
     },
-    enabled: !!user?.id,
   });
 };
 
@@ -158,18 +151,33 @@ export const useUpdateTracking = () => {
   });
 };
 
-// Hook para buscar planos disponíveis
-export const usePlans = () => {
-  return useQuery({
-    queryKey: ['plans'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('plans')
-        .select('*')
-        .order('monthly_price');
+// Hook para deletar rastreamento
+export const useDeleteTracking = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('trackings')
+        .delete()
+        .eq('id', id);
       
       if (error) throw error;
-      return data || [];
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['trackings'] });
+      toast({
+        title: "Rastreamento excluído!",
+        description: "O rastreamento foi removido com sucesso.",
+      });
+    },
+    onError: (error: any) => {
+      console.error('Error deleting tracking:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao excluir rastreamento.",
+        variant: "destructive",
+      });
     },
   });
 };
@@ -206,5 +214,24 @@ export const useUpdateUserProfile = () => {
         variant: "destructive",
       });
     },
+  });
+};
+
+// Hook para buscar estatísticas do usuário
+export const useUserStats = () => {
+  const { user } = useAuth();
+  
+  return useQuery({
+    queryKey: ['userStats', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const { data, error } = await supabase
+        .rpc('get_user_stats', { user_id: user.id });
+      
+      if (error) throw error;
+      return data?.[0] || null;
+    },
+    enabled: !!user?.id,
   });
 };

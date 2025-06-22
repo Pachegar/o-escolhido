@@ -6,17 +6,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserProfile } from '@/hooks/useSupabaseData';
 
 const Indicacoes = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const [copied, setCopied] = useState(false);
 
-  // Mock user data - in real app this would come from auth context
-  const userReferralCode = 'REF-12345ABC';
-  const referralLink = `https://pachegar.com.br/planos?ref=${userReferralCode}`;
-  const totalIndicacoes = 3;
-  const rastreiosGanhos = 45; // 3 * 15
+  const { data: userProfile, isLoading } = useUserProfile();
+
+  const userReferralCode = userProfile?.referral_code || 'REF-LOADING';
+  const referralLink = `${window.location.origin}/planos?ref=${userReferralCode}`;
+  const totalIndicacoes = 0; // Will be implemented with real data later
+  const rastreiosGanhos = userProfile?.referral_credits || 0;
 
   const copyReferralLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -28,6 +30,19 @@ const Indicacoes = () => {
     
     setTimeout(() => setCopied(false), 2000);
   };
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="p-6">
+          <div className="animate-pulse space-y-6">
+            <div className="h-8 bg-muted rounded w-64"></div>
+            <div className="h-96 bg-muted rounded-lg"></div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
