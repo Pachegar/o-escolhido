@@ -48,6 +48,7 @@ export const useDeliveryModels = () => {
       const { data, error } = await supabase
         .from('delivery_models')
         .insert({
+          name: modelData.nome,
           exact_delivery_days: parseInt(modelData.diasEntrega),
           user_id: user.id,
           qtde_eventos: 5,
@@ -89,6 +90,7 @@ export const useDeliveryModels = () => {
       const { data, error } = await supabase
         .from('delivery_models')
         .update({
+          name: modelData.nome,
           exact_delivery_days: parseInt(modelData.diasEntrega),
         })
         .eq('id', id)

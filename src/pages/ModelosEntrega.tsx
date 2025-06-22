@@ -44,7 +44,7 @@ const ModelosEntrega = () => {
     console.log('Editing model:', modelo);
     setEditingModel(modelo);
     setFormData({
-      nome: `Modelo ${modelo.exact_delivery_days} dias`,
+      nome: modelo.name,
       diasEntrega: modelo.exact_delivery_days.toString()
     });
     setDialogOpen(true);
@@ -176,7 +176,7 @@ const ModelosEntrega = () => {
                   {modelos?.map((modelo) => (
                     <TableRow key={modelo.id}>
                       <TableCell className="font-medium text-white">
-                        Modelo {modelo.exact_delivery_days} dias
+                        {modelo.name}
                       </TableCell>
                       <TableCell className="text-white">{modelo.exact_delivery_days} dias úteis</TableCell>
                       <TableCell className="text-white">
