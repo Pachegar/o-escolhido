@@ -5,20 +5,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { SmartInsights } from '@/components/SmartInsights';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DebugSupabase } from '@/components/DebugSupabase';
 import { Link } from 'react-router-dom';
 import { useDashboardStats } from '@/hooks/useSupabaseData';
 import { useAuth } from '@/contexts/AuthContext';
 import { TrendingUp, TrendingDown, ArrowUpRight } from 'lucide-react';
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { data: stats, isLoading, error } = useDashboardStats();
 
+  console.log('Dashboard render - User:', user?.email, 'Loading:', isLoading, 'Error:', error);
+
   // Estados de carregamento
-  if (isLoading) {
+  if (authLoading || isLoading) {
     return (
       <Layout>
         <div className="p-6">
+          <DebugSupabase />
           <div className="animate-pulse space-y-6">
             <Skeleton className="h-8 w-64" />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -40,16 +44,21 @@ const Dashboard = () => {
 
   // Tratamento de erros
   if (error) {
+    console.error('Dashboard error:', error);
     return (
       <Layout>
         <div className="p-6">
+          <DebugSupabase />
           <Card className="glass-card border-red-500/50 bg-red-500/10">
             <CardContent className="p-6 text-center">
               <div className="text-4xl mb-4">⚠️</div>
               <h3 className="text-lg font-semibold mb-2 text-white">Erro ao carregar dados</h3>
               <p className="text-muted-foreground mb-4">
-                Não foi possível carregar as informações do dashboard. Tente recarregar a página.
+                Não foi possível carregar as informações do dashboard.
               </p>
+              <div className="text-xs text-muted-foreground mb-4 font-mono">
+                Erro: {error.message}
+              </div>
               <Button onClick={() => window.location.reload()} className="hover-button">
                 Recarregar página
               </Button>
@@ -60,11 +69,12 @@ const Dashboard = () => {
     );
   }
 
-  // Se não há dados (usuário não logado ou erro)
-  if (!stats || !user) {
+  // Se não há usuário logado
+  if (!user) {
     return (
       <Layout>
         <div className="p-6">
+          <DebugSupabase />
           <Card className="glass-card">
             <CardContent className="p-6 text-center">
               <div className="text-4xl mb-4">🔐</div>
@@ -77,6 +87,29 @@ const Dashboard = () => {
                   Fazer login
                 </Button>
               </Link>
+            </CardContent>
+          </Card>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Se não há dados (possível erro na query)
+  if (!stats) {
+    return (
+      <Layout>
+        <div className="p-6">
+          <DebugSupabase />
+          <Card className="glass-card border-yellow-500/50 bg-yellow-500/10">
+            <CardContent className="p-6 text-center">
+              <div className="text-4xl mb-4">⚠️</div>
+              <h3 className="text-lg font-semibold mb-2 text-white">Dados não encontrados</h3>
+              <p className="text-muted-foreground mb-4">
+                Não foi possível carregar seus dados. Isso pode acontecer se sua conta ainda não foi totalmente configurada.
+              </p>
+              <Button onClick={() => window.location.reload()} className="hover-button">
+                Recarregar página
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -122,6 +155,8 @@ const Dashboard = () => {
   return (
     <Layout>
       <div className="p-6 space-y-6">
+        <DebugSupabase />
+        
         {/* Smart Insights */}
         <SmartInsights />
 
