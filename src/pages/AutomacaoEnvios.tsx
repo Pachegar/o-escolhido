@@ -11,20 +11,31 @@ import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
+// Tipos para as configurações
+interface EmailConfig {
+  sender_name: string;
+  subject: string;
+  body: string;
+}
+
+interface WhatsAppConfig {
+  message: string;
+}
+
 const AutomacaoEnvios = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [userPlan, setUserPlan] = useState<string | null>(null);
   
   // Email automation state
-  const [emailConfig, setEmailConfig] = useState({
+  const [emailConfig, setEmailConfig] = useState<EmailConfig>({
     sender_name: '',
     subject: '',
     body: ''
   });
   
   // WhatsApp automation state
-  const [whatsappConfig, setWhatsappConfig] = useState({
+  const [whatsappConfig, setWhatsappConfig] = useState<WhatsAppConfig>({
     message: ''
   });
 
@@ -63,11 +74,12 @@ const AutomacaoEnvios = () => {
         .eq('type', 'email')
         .single();
       
-      if (emailData) {
+      if (emailData && emailData.config_data) {
+        const configData = emailData.config_data as EmailConfig;
         setEmailConfig({
-          sender_name: emailData.config_data.sender_name || '',
-          subject: emailData.config_data.subject || '',
-          body: emailData.config_data.body || ''
+          sender_name: configData.sender_name || '',
+          subject: configData.subject || '',
+          body: configData.body || ''
         });
       }
 
@@ -79,9 +91,10 @@ const AutomacaoEnvios = () => {
         .eq('type', 'whatsapp')
         .single();
       
-      if (whatsappData) {
+      if (whatsappData && whatsappData.config_data) {
+        const configData = whatsappData.config_data as WhatsAppConfig;
         setWhatsappConfig({
-          message: whatsappData.config_data.message || ''
+          message: configData.message || ''
         });
       }
     } catch (error) {
