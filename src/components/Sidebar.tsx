@@ -1,4 +1,3 @@
-
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, 
@@ -10,6 +9,7 @@ import {
   CreditCard,
   FileText,
   Plug,
+  Mail,
   LogOut
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -29,12 +29,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
     { icon: Plus, label: 'Criar Rastreamento', path: '/rastreamentos/criar' },
     { icon: Truck, label: 'Modelos de Entrega', path: '/modelos' },
     { icon: Plug, label: 'Integrações', path: '/integracoes' },
+    { icon: Mail, label: 'Automação de Envios', path: '/automacao-envios' },
     { icon: Users, label: 'Indicações', path: '/indicacoes' },
     { icon: FileText, label: 'Order Bump', path: '/orderbump' },
     { icon: CreditCard, label: 'Planos', path: '/planos' },
     { icon: Settings, label: 'Configurações', path: '/configuracoes' },
   ];
 
+  
   const handleItemClick = () => {
     if (onItemClick) {
       onItemClick();
