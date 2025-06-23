@@ -45,6 +45,39 @@ export type Database = {
         }
         Relationships: []
       }
+      integrations: {
+        Row: {
+          config_data: Json
+          created_at: string
+          id: string
+          is_active: boolean
+          platform_name: string
+          platform_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          config_data?: Json
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          platform_name: string
+          platform_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          config_data?: Json
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          platform_name?: string
+          platform_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       mensagens_eventos: {
         Row: {
           codigo_evento: string | null

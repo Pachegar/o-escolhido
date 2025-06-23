@@ -16,6 +16,7 @@ import EditarRastreamento from '@/pages/EditarRastreamento';
 import DetalhesRastreamento from '@/pages/DetalhesRastreamento';
 import ModelosEntrega from '@/pages/ModelosEntrega';
 import Indicacoes from '@/pages/Indicacoes';
+import Integracoes from '@/pages/Integracoes';
 import Configuracoes from '@/pages/Configuracoes';
 import Planos from '@/pages/Planos';
 import OrderBump from '@/pages/OrderBump';
@@ -70,6 +71,11 @@ function App() {
             <Route path="/indicacoes" element={
               <ProtectedRoute>
                 <Indicacoes />
+              </ProtectedRoute>
+            } />
+            <Route path="/integracoes" element={
+              <ProtectedRoute>
+                <Integracoes />
               </ProtectedRoute>
             } />
             <Route path="/configuracoes" element={

@@ -1,46 +1,19 @@
 
 import { Link, useLocation } from 'react-router-dom';
+import { 
+  Home, 
+  Package, 
+  Plus, 
+  Truck, 
+  Users, 
+  Settings, 
+  CreditCard,
+  FileText,
+  Plug,
+  LogOut
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { cn } from '@/lib/utils';
-
-const menuItems = [
-  {
-    title: 'Dashboard',
-    href: '/dashboard',
-    icon: '📊'
-  },
-  {
-    title: 'Rastreamentos',
-    href: '/rastreamentos',
-    icon: '📦'
-  },
-  {
-    title: 'Modelos de Entrega',
-    href: '/modelos',
-    icon: '🚛'
-  },
-  {
-    title: 'OrderBump',
-    href: '/orderbump',
-    icon: '🛍️',
-    planRequired: ['Golfinho', 'Tubarão']
-  },
-  {
-    title: 'Indique e Ganhe',
-    href: '/indicacoes',
-    icon: '💰'
-  },
-  {
-    title: 'Configurações',
-    href: '/configuracoes',
-    icon: '⚙️'
-  },
-  {
-    title: 'Planos',
-    href: '/planos',
-    icon: '💎'
-  }
-];
 
 interface SidebarProps {
   onItemClick?: () => void;
@@ -49,72 +22,75 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   const location = useLocation();
   const { signOut } = useAuth();
-
-  // Mock user plan - in real app this would come from auth context
-  const userPlan = 'Golfinho'; // or 'Peixe', 'Polvo', 'Tubarão'
+  
+  const menuItems = [
+    { icon: Home, label: 'Dashboard', path: '/dashboard' },
+    { icon: Package, label: 'Rastreamentos', path: '/rastreamentos' },
+    { icon: Plus, label: 'Criar Rastreamento', path: '/rastreamentos/criar' },
+    { icon: Truck, label: 'Modelos de Entrega', path: '/modelos' },
+    { icon: Plug, label: 'Integrações', path: '/integracoes' },
+    { icon: Users, label: 'Indicações', path: '/indicacoes' },
+    { icon: FileText, label: 'Order Bump', path: '/orderbump' },
+    { icon: CreditCard, label: 'Planos', path: '/planos' },
+    { icon: Settings, label: 'Configurações', path: '/configuracoes' },
+  ];
 
   const handleItemClick = () => {
-    if (onItemClick) onItemClick();
+    if (onItemClick) {
+      onItemClick();
+    }
   };
 
-  const handleSignOut = () => {
-    signOut();
-    if (onItemClick) onItemClick();
+  const handleSignOut = async () => {
+    await signOut();
+    if (onItemClick) {
+      onItemClick();
+    }
   };
 
   return (
-    <div className="w-64 bg-card border-r border-border flex flex-col h-full">
-      <div className="p-6 border-b border-border">
-        <div className="flex items-center gap-3">
-          <img 
-            src="/lovable-uploads/eb8d8e3b-2f97-4b6a-b22a-6a8273307baa.png" 
-            alt="Pachegar" 
-            className="h-8 w-auto"
-          />
-          <div>
-            <h1 className="text-2xl font-bold text-primary">Pachegar</h1>
-          </div>
-        </div>
+    <div className="w-80 h-full bg-card/90 backdrop-blur-lg border-r border-border/50 flex flex-col">
+      {/* Logo/Brand */}
+      <div className="p-6 border-b border-border/50">
+        <Link to="/dashboard" onClick={handleItemClick}>
+          <h1 className="text-2xl font-bold gradient-text">Pachegar</h1>
+        </Link>
       </div>
-      
+
+      {/* Navigation Menu */}
       <nav className="flex-1 p-4 space-y-2">
         {menuItems.map((item) => {
-          // Check if user has access to this menu item
-          const hasAccess = !item.planRequired || item.planRequired.includes(userPlan);
+          const Icon = item.icon;
+          const isActive = location.pathname === item.path;
           
           return (
             <Link
-              key={item.href}
-              to={item.href}
+              key={item.path}
+              to={item.path}
               onClick={handleItemClick}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg group",
-                location.pathname === item.href
-                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                  : "hover:bg-accent hover:shadow-md",
-                !hasAccess && "opacity-50 cursor-not-allowed"
-              )}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 hover:bg-primary/10 ${
+                isActive 
+                  ? 'bg-primary/20 text-primary border border-primary/30' 
+                  : 'text-muted-foreground hover:text-primary'
+              }`}
             >
-              <span className="text-lg group-hover:scale-110 transition-transform duration-200">{item.icon}</span>
-              <span className="font-medium text-white">{item.title}</span>
-              {!hasAccess && (
-                <span className="ml-auto text-xs bg-yellow-500/20 text-yellow-300 px-1 py-0.5 rounded">
-                  Premium
-                </span>
-              )}
+              <Icon className="h-5 w-5" />
+              <span className="font-medium">{item.label}</span>
             </Link>
           );
         })}
       </nav>
-      
-      <div className="p-4 border-t border-border">
-        <button
+
+      {/* Logout Button */}
+      <div className="p-4 border-t border-border/50">
+        <Button
+          variant="ghost"
           onClick={handleSignOut}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 hover:bg-destructive hover:text-destructive-foreground hover:scale-105 hover:shadow-lg group"
+          className="w-full justify-start gap-3 text-muted-foreground hover:text-red-400 hover:bg-red-400/10"
         >
-          <span className="text-lg group-hover:scale-110 transition-transform duration-200">🚪</span>
-          <span className="font-medium text-white">Sair</span>
-        </button>
+          <LogOut className="h-5 w-5" />
+          Sair
+        </Button>
       </div>
     </div>
   );
