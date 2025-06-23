@@ -52,7 +52,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
     <div className="w-80 h-full bg-card/90 backdrop-blur-lg border-r border-border/50 flex flex-col">
       {/* Logo/Brand */}
       <div className="p-6 border-b border-border/50">
-        <Link to="/dashboard" onClick={handleItemClick}>
+        <Link to="/dashboard" onClick={handleItemClick} className="flex items-center gap-3">
+          <img 
+            src="/lovable-uploads/eb8d8e3b-2f97-4b6a-b22a-6a8273307baa.png" 
+            alt="Pachegar Logo" 
+            className="w-8 h-8"
+          />
           <h1 className="text-2xl font-bold gradient-text">Pachegar</h1>
         </Link>
       </div>
