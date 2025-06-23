@@ -9,6 +9,36 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      automation_settings: {
+        Row: {
+          config_data: Json
+          created_at: string
+          id: string
+          is_active: boolean
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          config_data?: Json
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          config_data?: Json
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       delivery_models: {
         Row: {
           created_at: string | null
