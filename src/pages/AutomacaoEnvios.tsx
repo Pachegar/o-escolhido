@@ -75,7 +75,7 @@ const AutomacaoEnvios = () => {
         .single();
       
       if (emailData && emailData.config_data) {
-        const configData = emailData.config_data as EmailConfig;
+        const configData = emailData.config_data as unknown as EmailConfig;
         setEmailConfig({
           sender_name: configData.sender_name || '',
           subject: configData.subject || '',
@@ -92,7 +92,7 @@ const AutomacaoEnvios = () => {
         .single();
       
       if (whatsappData && whatsappData.config_data) {
-        const configData = whatsappData.config_data as WhatsAppConfig;
+        const configData = whatsappData.config_data as unknown as WhatsAppConfig;
         setWhatsappConfig({
           message: configData.message || ''
         });
@@ -112,7 +112,7 @@ const AutomacaoEnvios = () => {
         .upsert({
           user_id: user.id,
           type: 'email',
-          config_data: emailConfig,
+          config_data: emailConfig as any,
           is_active: true
         }, {
           onConflict: 'user_id,type'
@@ -146,7 +146,7 @@ const AutomacaoEnvios = () => {
         .upsert({
           user_id: user.id,
           type: 'whatsapp',
-          config_data: whatsappConfig,
+          config_data: whatsappConfig as any,
           is_active: true
         }, {
           onConflict: 'user_id,type'
