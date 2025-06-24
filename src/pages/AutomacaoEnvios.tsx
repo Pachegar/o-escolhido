@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Mail, MessageCircle, Play, Info } from 'lucide-react';
+import { Mail, MessageCircle, Play, Info, Settings } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAutomationSettings } from '@/hooks/useAutomationSettings';
@@ -14,6 +14,8 @@ import { useAutomationSettings } from '@/hooks/useAutomationSettings';
 const AutomacaoEnvios = () => {
   const { user } = useAuth();
   const [userPlan, setUserPlan] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [devMode, setDevMode] = useState(false);
   const {
     loading,
     emailConfig,
@@ -26,6 +28,7 @@ const AutomacaoEnvios = () => {
 
   useEffect(() => {
     fetchUserPlan();
+    checkAdminRole();
   }, [user]);
 
   const fetchUserPlan = async () => {
@@ -46,17 +49,70 @@ const AutomacaoEnvios = () => {
     }
   };
 
-  const canAccessEmail = userPlan === 'Golfinho' || userPlan === 'Tubarão';
-  const canAccessWhatsApp = userPlan === 'Tubarão';
+  const checkAdminRole = async () => {
+    if (!user) return;
+    
+    try {
+      const { data } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .in('role', ['admin', 'moderator']);
+      
+      if (data && data.length > 0) {
+        setIsAdmin(true);
+      }
+    } catch (error) {
+      console.error('Error checking admin role:', error);
+    }
+  };
+
+  // Check access permissions
+  const canAccessEmail = devMode || userPlan === 'Golfinho' || userPlan === 'Tubarão';
+  const canAccessWhatsApp = devMode || userPlan === 'Tubarão';
 
   return (
     <Layout>
       <div className="container mx-auto py-8 px-4">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Automação de Envios</h1>
-          <p className="text-muted-foreground">
-            Configure o envio automático de notificações de rastreamento para seus clientes
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold mb-2">Automação de Envios</h1>
+              <p className="text-muted-foreground">
+                Configure o envio automático de notificações de rastreamento para seus clientes
+              </p>
+            </div>
+            
+            {/* Dev Mode Toggle - Only for admins */}
+            {isAdmin && (
+              <div className="flex items-center gap-2 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                <Settings className="h-4 w-4 text-orange-600" />
+                <span className="text-sm font-medium text-orange-800">Modo Desenvolvedor:</span>
+                <Button
+                  variant={devMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setDevMode(!devMode)}
+                >
+                  {devMode ? 'Ativado' : 'Desativado'}
+                </Button>
+              </div>
+            )}
+          </div>
+          
+          {/* Dev Mode Alert */}
+          {devMode && (
+            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <div className="flex items-start gap-2">
+                <Info className="h-5 w-5 text-yellow-600 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-yellow-800">Modo Desenvolvedor Ativo</p>
+                  <p className="text-sm text-yellow-700">
+                    As limitações de plano foram desabilitadas temporariamente para testes e desenvolvimento.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="space-y-8">
@@ -67,6 +123,7 @@ const AutomacaoEnvios = () => {
                 <CardTitle className="flex items-center gap-2">
                   <Mail className="h-5 w-5" />
                   Automação por E-mail
+                  {devMode && <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">DEV</span>}
                 </CardTitle>
                 <CardDescription>
                   Configure as mensagens de e-mail que serão enviadas automaticamente quando o status do pedido for atualizado
@@ -129,6 +186,7 @@ const AutomacaoEnvios = () => {
                 <CardTitle className="flex items-center gap-2">
                   <MessageCircle className="h-5 w-5" />
                   Automação por WhatsApp
+                  {devMode && <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">DEV</span>}
                 </CardTitle>
                 <CardDescription>
                   Configure as mensagens de WhatsApp que serão enviadas automaticamente quando o status do pedido for atualizado
@@ -201,8 +259,8 @@ const AutomacaoEnvios = () => {
             </CardContent>
           </Card>
 
-          {/* Aviso para planos menores */}
-          {!canAccessEmail && !canAccessWhatsApp && (
+          {/* Aviso para planos menores - Only show if not in dev mode */}
+          {!canAccessEmail && !canAccessWhatsApp && !devMode && (
             <Card>
               <CardContent className="pt-6">
                 <div className="text-center py-8">
