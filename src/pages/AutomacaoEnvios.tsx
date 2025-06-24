@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Layout } from '@/components/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,7 +15,7 @@ const AutomacaoEnvios = () => {
   const { user } = useAuth();
   const [userPlan, setUserPlan] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [devMode, setDevMode] = useState(false);
+  const [mockMode, setMockMode] = useState(true); // Ativado por padrão para desenvolvimento
   const {
     loading,
     emailConfig,
@@ -66,9 +67,9 @@ const AutomacaoEnvios = () => {
     }
   };
 
-  // Check access permissions
-  const canAccessEmail = devMode || userPlan === 'Golfinho' || userPlan === 'Tubarão';
-  const canAccessWhatsApp = devMode || userPlan === 'Tubarão';
+  // Modo mock: simula acesso completo (plano Tubarão)
+  const canAccessEmail = mockMode || userPlan === 'Golfinho' || userPlan === 'Tubarão';
+  const canAccessWhatsApp = mockMode || userPlan === 'Tubarão';
 
   return (
     <Layout>
@@ -82,31 +83,30 @@ const AutomacaoEnvios = () => {
               </p>
             </div>
             
-            {/* Dev Mode Toggle - Only for admins */}
-            {isAdmin && (
-              <div className="flex items-center gap-2 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                <Settings className="h-4 w-4 text-orange-600" />
-                <span className="text-sm font-medium text-orange-800">Modo Desenvolvedor:</span>
-                <Button
-                  variant={devMode ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setDevMode(!devMode)}
-                >
-                  {devMode ? 'Ativado' : 'Desativado'}
-                </Button>
-              </div>
-            )}
+            {/* Mock Mode Toggle - Sempre visível durante desenvolvimento */}
+            <div className="flex items-center gap-2 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+              <Settings className="h-4 w-4 text-purple-600" />
+              <span className="text-sm font-medium text-purple-800">Modo Mock (Tubarão):</span>
+              <Button
+                variant={mockMode ? "default" : "outline"}
+                size="sm"
+                onClick={() => setMockMode(!mockMode)}
+              >
+                {mockMode ? 'Ativado' : 'Desativado'}
+              </Button>
+            </div>
           </div>
           
-          {/* Dev Mode Alert */}
-          {devMode && (
-            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          {/* Mock Mode Alert */}
+          {mockMode && (
+            <div className="mt-4 p-4 bg-purple-50 border border-purple-200 rounded-lg">
               <div className="flex items-start gap-2">
-                <Info className="h-5 w-5 text-yellow-600 mt-0.5" />
+                <Info className="h-5 w-5 text-purple-600 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-yellow-800">Modo Desenvolvedor Ativo</p>
-                  <p className="text-sm text-yellow-700">
-                    As limitações de plano foram desabilitadas temporariamente para testes e desenvolvimento.
+                  <p className="text-sm font-medium text-purple-800">Modo Mock Ativo - Simulando Plano Tubarão</p>
+                  <p className="text-sm text-purple-700">
+                    Você está visualizando todas as funcionalidades disponíveis no plano Tubarão, incluindo automação por email e WhatsApp.
+                    Plano atual: {userPlan || 'Carregando...'}
                   </p>
                 </div>
               </div>
@@ -122,7 +122,7 @@ const AutomacaoEnvios = () => {
                 <CardTitle className="flex items-center gap-2">
                   <Mail className="h-5 w-5" />
                   Automação por E-mail
-                  {devMode && <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">DEV</span>}
+                  {mockMode && <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">MOCK</span>}
                 </CardTitle>
                 <CardDescription>
                   Configure as mensagens de e-mail que serão enviadas automaticamente quando o status do pedido for atualizado
@@ -185,7 +185,7 @@ const AutomacaoEnvios = () => {
                 <CardTitle className="flex items-center gap-2">
                   <MessageCircle className="h-5 w-5" />
                   Automação por WhatsApp
-                  {devMode && <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">DEV</span>}
+                  {mockMode && <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">MOCK</span>}
                 </CardTitle>
                 <CardDescription>
                   Configure as mensagens de WhatsApp que serão enviadas automaticamente quando o status do pedido for atualizado
@@ -258,8 +258,8 @@ const AutomacaoEnvios = () => {
             </CardContent>
           </Card>
 
-          {/* Aviso para planos menores - Only show if not in dev mode */}
-          {!canAccessEmail && !canAccessWhatsApp && !devMode && (
+          {/* Aviso para planos menores - Only show if not in mock mode */}
+          {!canAccessEmail && !canAccessWhatsApp && !mockMode && (
             <Card>
               <CardContent className="pt-6">
                 <div className="text-center py-8">
