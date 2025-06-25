@@ -52,7 +52,8 @@ const demoTrackingData = {
       whatsappNumber: '+55 11 99999-9999',
       showEmail: false,
       emailContact: ''
-    }
+    },
+    nomeLoja: 'Minha Loja Virtual'
   },
   'BR987654321RJ': {
     codigo: 'BR987654321RJ',
@@ -110,7 +111,8 @@ const demoTrackingData = {
       whatsappNumber: '+55 21 98888-8888',
       showEmail: true,
       emailContact: 'contato@boutiquemaria.com.br'
-    }
+    },
+    nomeLoja: 'Boutique Elegante'
   },
   'BR456789123MG': {
     codigo: 'BR456789123MG',
@@ -150,7 +152,8 @@ const demoTrackingData = {
       whatsappNumber: '',
       showEmail: true,
       emailContact: 'suporte@techstorebh.com.br'
-    }
+    },
+    nomeLoja: ''
   },
   'BR789123456PR': {
     codigo: 'BR789123456PR',
@@ -197,7 +200,8 @@ const demoTrackingData = {
       whatsappNumber: '',
       showEmail: false,
       emailContact: ''
-    }
+    },
+    nomeLoja: 'Fashion Premium'
   }
 };
 
@@ -247,7 +251,8 @@ const RastreamentoPublico = () => {
           whatsappNumber: '',
           showEmail: false,
           emailContact: ''
-        }
+        },
+        nomeLoja: ''
       };
     },
   });
@@ -286,6 +291,9 @@ const RastreamentoPublico = () => {
     );
   }
 
+  // Determine store name to display
+  const displayStoreName = rastreamento.nomeLoja || rastreamento.loja || 'Loja do Lojista';
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -305,7 +313,7 @@ const RastreamentoPublico = () => {
                     <span className="text-white font-bold text-lg">R</span>
                   </div>
                   <div>
-                    <h1 className="text-lg font-bold text-gray-900">{rastreamento?.loja || 'RastreieTrack'}</h1>
+                    <h1 className="text-lg font-bold text-gray-900">{displayStoreName}</h1>
                   </div>
                 </div>
               )}

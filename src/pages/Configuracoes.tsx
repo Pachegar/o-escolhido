@@ -21,6 +21,7 @@ const Configuracoes = () => {
   const [subdomainLoading, setSubdomainLoading] = useState(false);
   const [domainLoading, setDomainLoading] = useState(false);
   const [footerLoading, setFooterLoading] = useState(false);
+  const [storeLoading, setStoreLoading] = useState(false);
   
   // Mock user plan - in real app this would come from auth context
   const userPlan = 'Polvo'; // or 'Peixe', 'Golfinho', 'Tubarão'
@@ -39,7 +40,8 @@ const Configuracoes = () => {
     tomVoz: 'profissional',
     corDestaque: '#0152F8',
     subdominio: '',
-    dominioCustomizado: ''
+    dominioCustomizado: '',
+    nomeLoja: ''
   });
 
   // Footer customization state
@@ -182,6 +184,28 @@ const Configuracoes = () => {
       });
     } finally {
       setDomainLoading(false);
+    }
+  };
+
+  const handleStoreSave = async () => {
+    setStoreLoading(true);
+    
+    try {
+      // Here you would save store name to Supabase
+      console.log('Saving store name:', config.nomeLoja);
+      
+      toast({
+        title: "Nome da loja salvo!",
+        description: "O nome foi atualizado com sucesso",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível salvar o nome da loja",
+        variant: "destructive",
+      });
+    } finally {
+      setStoreLoading(false);
     }
   };
 
@@ -497,6 +521,40 @@ const Configuracoes = () => {
                 </Link>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Store Name Section */}
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-white">Informações da Loja</CardTitle>
+            <CardDescription>
+              Configure as informações básicas da sua loja
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="nome-loja" className="text-white">Nome da loja</Label>
+              <Input
+                id="nome-loja"
+                value={config.nomeLoja}
+                onChange={(e) => setConfig(prev => ({ ...prev, nomeLoja: e.target.value }))}
+                placeholder="Digite o nome da sua loja"
+                maxLength={40}
+                className="mt-1"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Este nome aparecerá na página pública de rastreamento (máximo 40 caracteres)
+              </p>
+            </div>
+            <Button 
+              onClick={handleStoreSave}
+              disabled={storeLoading}
+              className="hover-button glow-button"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {storeLoading ? "Salvando..." : "Salvar nome da loja"}
+            </Button>
           </CardContent>
         </Card>
 
