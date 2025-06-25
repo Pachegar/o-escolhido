@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { PasswordInput } from '@/components/ui/password-input';
@@ -34,7 +34,7 @@ const Login = () => {
         if (error.message.includes('Invalid email')) {
           errorMessage = 'Email inválido. Verifique o formato do email.';
         } else if (error.message.includes('User not found')) {
-          errorMessage = 'Este email não está cadastrado. Verifique o email ou faça seu cadastro.';
+          errorMessage = 'Este email não está cadastrado. Verifique o email.';
         } else if (error.message.includes('For security purposes')) {
           errorMessage = 'Por motivos de segurança, só é possível solicitar recuperação de senha a cada 60 segundos.';
         } else {
@@ -52,7 +52,6 @@ const Login = () => {
       if (error) {
         console.error('Login error:', error);
         
-        // Simplified error message as requested
         toast.error("❌ E-mail ou senha incorretos. Verifique suas credenciais e tente novamente.");
       } else {
         toast.success("Login realizado com sucesso! Bem-vindo ao Pachegar");
@@ -146,17 +145,6 @@ const Login = () => {
               </div>
             )}
           </form>
-          
-          {!resetMode && (
-            <div className="mt-6 text-center">
-              <p className="text-muted-foreground">
-                Não tem uma conta?{' '}
-                <Link to="/registro" className="text-primary hover:underline">
-                  Cadastre-se
-                </Link>
-              </p>
-            </div>
-          )}
         </CardContent>
       </Card>
     </div>

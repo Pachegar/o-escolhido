@@ -8,7 +8,6 @@ import { Toaster } from '@/components/ui/sonner';
 // Pages
 import Index from '@/pages/Index';
 import Login from '@/pages/Login';
-import Register from '@/pages/Register';
 import Dashboard from '@/pages/Dashboard';
 import Rastreamentos from '@/pages/Rastreamentos';
 import CriarRastreamento from '@/pages/CriarRastreamento';
@@ -34,9 +33,6 @@ function App() {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/registro" element={<Register />} />
-            <Route path="/cadastro" element={<Register />} />
             
             {/* Protected Routes */}
             <Route path="/dashboard" element={
