@@ -4,97 +4,89 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react';
-import { Plus, Save, Trash2, Upload } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
-
-interface OrderBumpProduct {
-  id?: string;
-  sectionTitle: string;
-  sectionSubtitle: string;
-  productName: string;
-  productImageUrl: string;
-  originalPrice: number;
-  promotionalPrice: number;
-  ctaLink: string;
-  displayOrder: number;
-}
+import { Plus, Save, Trash2 } from 'lucide-react';
+import { ImageUpload } from '@/components/ImageUpload';
+import {
+  useOrderBumpProducts,
+  useCreateOrderBumpProduct,
+  useUpdateOrderBumpProduct,
+  useDeleteOrderBumpProduct,
+  OrderBumpProduct
+} from '@/hooks/useOrderBump';
 
 const OrderBump = () => {
   // Mock user plan - in real app this would come from auth context
   const userPlan = 'Golfinho'; // or 'Tubarão'
   const canUseOrderBump = ['Golfinho', 'Tubarão'].includes(userPlan);
 
-  const [products, setProducts] = useState<OrderBumpProduct[]>([
-    {
-      id: '1',
-      sectionTitle: 'Oferta Especial Para Você!',
-      sectionSubtitle: 'Aproveite enquanto seu pedido não chegou!',
-      productName: 'Camiseta Premium',
-      productImageUrl: '/lovable-uploads/4452a6b2-830b-4a8e-a618-22a587835250.png',
-      originalPrice: 89.90,
-      promotionalPrice: 59.90,
-      ctaLink: 'https://loja.exemplo.com/camiseta',
-      displayOrder: 1
-    }
-  ]);
+  const { data: products = [], isLoading } = useOrderBumpProducts();
+  const createProductMutation = useCreateOrderBumpProduct();
+  const updateProductMutation = useUpdateOrderBumpProduct();
+  const deleteProductMutation = useDeleteOrderBumpProduct();
 
-  const [loading, setLoading] = useState(false);
+  const [localProducts, setLocalProducts] = useState<OrderBumpProduct[]>([]);
+
+  // Sync with server data
+  React.useEffect(() => {
+    if (products.length > 0) {
+      setLocalProducts(products);
+    }
+  }, [products]);
 
   const addProduct = () => {
-    if (products.length >= 3) {
-      toast({
-        title: "Limite atingido",
-        description: "Você pode cadastrar no máximo 3 produtos",
-        variant: "destructive",
-      });
+    if (localProducts.length >= 3) {
       return;
     }
 
     const newProduct: OrderBumpProduct = {
-      sectionTitle: 'Oferta Especial',
-      sectionSubtitle: 'Aproveite esta oportunidade!',
-      productName: '',
-      productImageUrl: '',
-      originalPrice: 0,
-      promotionalPrice: 0,
-      ctaLink: '',
-      displayOrder: products.length + 1
+      section_title: 'Oferta Especial',
+      section_subtitle: 'Aproveite esta oportunidade!',
+      product_name: '',
+      product_image_url: '',
+      original_price: 0,
+      promotional_price: 0,
+      cta_link: '',
+      display_order: localProducts.length + 1
     };
 
-    setProducts([...products, newProduct]);
+    setLocalProducts([...localProducts, newProduct]);
   };
 
-  const removeProduct = (index: number) => {
-    setProducts(products.filter((_, i) => i !== index));
+  const removeProduct = async (index: number) => {
+    const product = localProducts[index];
+    
+    if (product.id) {
+      // Delete from database
+      await deleteProductMutation.mutateAsync(product.id);
+    }
+    
+    // Remove from local state
+    setLocalProducts(localProducts.filter((_, i) => i !== index));
   };
 
   const updateProduct = (index: number, field: keyof OrderBumpProduct, value: any) => {
-    const updatedProducts = [...products];
+    const updatedProducts = [...localProducts];
     updatedProducts[index] = { ...updatedProducts[index], [field]: value };
-    setProducts(updatedProducts);
+    setLocalProducts(updatedProducts);
   };
 
   const handleSave = async () => {
-    setLoading(true);
-    
     try {
-      // Here you would save to Supabase
-      console.log('Saving OrderBump products:', products);
-      
-      toast({
-        title: "Produtos salvos!",
-        description: "Suas ofertas foram atualizadas com sucesso",
-      });
+      for (const product of localProducts) {
+        if (product.id) {
+          // Update existing product
+          await updateProductMutation.mutateAsync({
+            id: product.id,
+            data: product
+          });
+        } else {
+          // Create new product
+          await createProductMutation.mutateAsync(product);
+        }
+      }
     } catch (error) {
-      toast({
-        title: "Erro",
-        description: "Não foi possível salvar os produtos",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+      console.error('Error saving products:', error);
     }
   };
 
@@ -119,6 +111,16 @@ const OrderBump = () => {
     );
   }
 
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="p-6">
+          <div className="text-center text-white">Carregando...</div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="p-6 space-y-6">
@@ -131,11 +133,11 @@ const OrderBump = () => {
           </div>
           <Button 
             onClick={handleSave}
-            disabled={loading}
+            disabled={createProductMutation.isPending || updateProductMutation.isPending}
             className="hover-button glow-button"
           >
             <Save className="w-4 h-4 mr-2" />
-            {loading ? "Salvando..." : "Salvar alterações"}
+            {createProductMutation.isPending || updateProductMutation.isPending ? "Salvando..." : "Salvar alterações"}
           </Button>
         </div>
 
@@ -151,7 +153,7 @@ const OrderBump = () => {
                   permitindo que seus clientes façam compras adicionais enquanto aguardam a entrega.
                 </p>
                 <p className="text-sm text-blue-400 mt-2">
-                  📊 Limite: {products.length}/3 produtos cadastrados
+                  📊 Limite: {localProducts.length}/3 produtos cadastrados
                 </p>
               </div>
             </div>
@@ -160,7 +162,7 @@ const OrderBump = () => {
 
         {/* Products */}
         <div className="space-y-6">
-          {products.map((product, index) => (
+          {localProducts.map((product, index) => (
             <Card key={index} className="glass-card">
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -170,6 +172,7 @@ const OrderBump = () => {
                     size="sm"
                     onClick={() => removeProduct(index)}
                     className="text-red-400 border-red-400 hover:bg-red-400/10"
+                    disabled={deleteProductMutation.isPending}
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -180,8 +183,8 @@ const OrderBump = () => {
                   <div>
                     <Label className="text-white">Título da seção</Label>
                     <Input
-                      value={product.sectionTitle}
-                      onChange={(e) => updateProduct(index, 'sectionTitle', e.target.value)}
+                      value={product.section_title}
+                      onChange={(e) => updateProduct(index, 'section_title', e.target.value)}
                       placeholder="Ex: Oferta Especial Para Você!"
                       className="mt-1"
                     />
@@ -189,8 +192,8 @@ const OrderBump = () => {
                   <div>
                     <Label className="text-white">Subtítulo</Label>
                     <Input
-                      value={product.sectionSubtitle}
-                      onChange={(e) => updateProduct(index, 'sectionSubtitle', e.target.value)}
+                      value={product.section_subtitle || ''}
+                      onChange={(e) => updateProduct(index, 'section_subtitle', e.target.value)}
                       placeholder="Ex: Aproveite enquanto seu pedido não chegou!"
                       className="mt-1"
                     />
@@ -200,30 +203,22 @@ const OrderBump = () => {
                 <div>
                   <Label className="text-white">Nome do produto</Label>
                   <Input
-                    value={product.productName}
-                    onChange={(e) => updateProduct(index, 'productName', e.target.value)}
+                    value={product.product_name}
+                    onChange={(e) => updateProduct(index, 'product_name', e.target.value)}
                     placeholder="Ex: Camiseta Premium"
                     className="mt-1"
                   />
                 </div>
 
                 <div>
-                  <Label className="text-white">URL da imagem</Label>
-                  <Input
-                    value={product.productImageUrl}
-                    onChange={(e) => updateProduct(index, 'productImageUrl', e.target.value)}
-                    placeholder="https://exemplo.com/imagem.jpg"
-                    className="mt-1"
-                  />
-                  {product.productImageUrl && (
-                    <div className="mt-2">
-                      <img 
-                        src={product.productImageUrl} 
-                        alt="Preview" 
-                        className="w-20 h-20 object-cover rounded-lg"
-                      />
-                    </div>
-                  )}
+                  <Label className="text-white">Imagem do produto</Label>
+                  <div className="mt-1">
+                    <ImageUpload
+                      value={product.product_image_url}
+                      onChange={(url) => updateProduct(index, 'product_image_url', url)}
+                      onRemove={() => updateProduct(index, 'product_image_url', '')}
+                    />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -232,8 +227,8 @@ const OrderBump = () => {
                     <Input
                       type="number"
                       step="0.01"
-                      value={product.originalPrice}
-                      onChange={(e) => updateProduct(index, 'originalPrice', parseFloat(e.target.value) || 0)}
+                      value={product.original_price}
+                      onChange={(e) => updateProduct(index, 'original_price', parseFloat(e.target.value) || 0)}
                       placeholder="89.90"
                       className="mt-1"
                     />
@@ -243,8 +238,8 @@ const OrderBump = () => {
                     <Input
                       type="number"
                       step="0.01"
-                      value={product.promotionalPrice}
-                      onChange={(e) => updateProduct(index, 'promotionalPrice', parseFloat(e.target.value) || 0)}
+                      value={product.promotional_price || 0}
+                      onChange={(e) => updateProduct(index, 'promotional_price', parseFloat(e.target.value) || 0)}
                       placeholder="59.90"
                       className="mt-1"
                     />
@@ -254,8 +249,8 @@ const OrderBump = () => {
                 <div>
                   <Label className="text-white">Link para compra</Label>
                   <Input
-                    value={product.ctaLink}
-                    onChange={(e) => updateProduct(index, 'ctaLink', e.target.value)}
+                    value={product.cta_link}
+                    onChange={(e) => updateProduct(index, 'cta_link', e.target.value)}
                     placeholder="https://loja.exemplo.com/produto"
                     className="mt-1"
                   />
@@ -265,12 +260,12 @@ const OrderBump = () => {
           ))}
 
           {/* Add Product Button */}
-          {products.length < 3 && (
+          {localProducts.length < 3 && (
             <Card className="glass-card border-dashed border-muted-foreground/50">
               <CardContent className="text-center py-12">
                 <Button onClick={addProduct} variant="outline" className="hover-button">
                   <Plus className="w-4 h-4 mr-2" />
-                  Adicionar produto ({products.length}/3)
+                  Adicionar produto ({localProducts.length}/3)
                 </Button>
               </CardContent>
             </Card>
