@@ -1,9 +1,11 @@
-
+import React from 'react';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { SmartInsights } from '@/components/SmartInsights';
+import { InteractiveTutorial } from '@/components/InteractiveTutorial';
+import { useTutorial } from '@/hooks/useTutorial';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,6 +14,7 @@ import { TrendingUp, TrendingDown, ArrowUpRight } from 'lucide-react';
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const { showTutorial, completeTutorial, skipTutorial } = useTutorial();
 
   const { data: stats, isLoading } = useQuery({
     queryKey: ['dashboard-stats', user?.id],
@@ -250,6 +253,14 @@ const Dashboard = () => {
           </Card>
         </div>
       </div>
+
+      {/* Interactive Tutorial */}
+      {showTutorial && (
+        <InteractiveTutorial
+          onComplete={completeTutorial}
+          onSkip={skipTutorial}
+        />
+      )}
     </Layout>
   );
 };
