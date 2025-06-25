@@ -283,7 +283,7 @@ const AutomacaoEnvios = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-4">
                           <div>
-                            <Label htmlFor="sender_name">Remetente (nome ou e-mail)</Label>
+                            <Label htmlFor="sender_name">Remetente (e-mail)</Label>
                             <Input
                               id="sender_name"
                               placeholder="Ex: João da Silva ou contato@loja.com"
