@@ -153,6 +153,51 @@ export type Database = {
         }
         Relationships: []
       }
+      order_bump_products: {
+        Row: {
+          created_at: string | null
+          cta_link: string
+          display_order: number | null
+          id: string
+          original_price: number
+          product_image_url: string | null
+          product_name: string
+          promotional_price: number | null
+          section_subtitle: string | null
+          section_title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          cta_link: string
+          display_order?: number | null
+          id?: string
+          original_price: number
+          product_image_url?: string | null
+          product_name: string
+          promotional_price?: number | null
+          section_subtitle?: string | null
+          section_title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          cta_link?: string
+          display_order?: number | null
+          id?: string
+          original_price?: number
+          product_image_url?: string | null
+          product_name?: string
+          promotional_price?: number | null
+          section_subtitle?: string | null
+          section_title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       order_bumps: {
         Row: {
           created_at: string | null

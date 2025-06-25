@@ -44,7 +44,28 @@ const demoTrackingData = {
       }
     ],
     estimativa: '17 de Janeiro, 2024',
-    orderBump: [],
+    orderBump: [
+      {
+        id: '1',
+        nome: 'Camiseta Premium',
+        imagem: '/lovable-uploads/4452a6b2-830b-4a8e-a618-22a587835250.png',
+        precoOriginal: 89.90,
+        precoPromocional: 59.90,
+        ctaLink: 'https://loja.exemplo.com/camiseta',
+        titulo: 'Oferta Especial Para Você!',
+        subtitulo: 'Aproveite enquanto seu pedido não chegou!'
+      },
+      {
+        id: '2',
+        nome: 'Tênis Esportivo',
+        imagem: '/lovable-uploads/4452a6b2-830b-4a8e-a618-22a587835250.png',
+        precoOriginal: 159.90,
+        precoPromocional: 119.90,
+        ctaLink: 'https://loja.exemplo.com/tenis',
+        titulo: 'Oferta Especial Para Você!',
+        subtitulo: 'Complete seu look!'
+      }
+    ],
     footerConfig: {
       showWebsite: true,
       websiteUrl: 'https://lojaexemplo.com.br',
@@ -416,34 +437,32 @@ const RastreamentoPublico = () => {
                 {rastreamento.orderBump[0].subtitulo}
               </p>
               
-              <div className="grid gap-4">
+              <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {rastreamento.orderBump.map((produto) => (
-                  <div key={produto.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                  <div key={produto.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                     <img 
                       src={produto.imagem} 
                       alt={produto.nome}
-                      className="w-16 h-16 object-cover rounded-lg"
+                      className="w-full h-32 object-cover rounded-lg mb-3"
                     />
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">{produto.nome}</h4>
-                      <div className="flex items-center gap-2">
-                        {produto.precoPromocional && (
-                          <span className="text-sm text-gray-500 line-through">
-                            R$ {produto.precoOriginal.toFixed(2)}
-                          </span>
-                        )}
-                        <span className="text-lg font-bold text-black">
-                          R$ {(produto.precoPromocional || produto.precoOriginal).toFixed(2)}
+                    <h4 className="font-semibold text-gray-900 mb-2">{produto.nome}</h4>
+                    <div className="flex items-center gap-2 mb-3">
+                      {produto.precoPromocional && produto.precoPromocional < produto.precoOriginal && (
+                        <span className="text-sm text-gray-500 line-through">
+                          R$ {produto.precoOriginal.toFixed(2)}
                         </span>
-                      </div>
+                      )}
+                      <span className="text-lg font-bold text-black">
+                        R$ {(produto.precoPromocional || produto.precoOriginal).toFixed(2)}
+                      </span>
                     </div>
                     <a 
                       href={produto.ctaLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
+                      className="w-full bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors text-center block"
                     >
-                      Comprar
+                      Comprar agora
                     </a>
                   </div>
                 ))}
