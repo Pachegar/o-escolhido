@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Layout } from '@/components/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -90,15 +89,15 @@ const AutomacaoEnvios = () => {
         .eq('user_id', user.id);
 
       automationData?.forEach(config => {
-        if (config.type === 'email') {
+        if (config.type === 'email' && config.config_data) {
           setEmailConfig(prev => ({
             ...prev,
-            ...config.config_data
+            ...(typeof config.config_data === 'object' ? config.config_data : {})
           }));
-        } else if (config.type === 'whatsapp') {
+        } else if (config.type === 'whatsapp' && config.config_data) {
           setWhatsappConfig(prev => ({
             ...prev,
-            ...config.config_data
+            ...(typeof config.config_data === 'object' ? config.config_data : {})
           }));
         }
       });
