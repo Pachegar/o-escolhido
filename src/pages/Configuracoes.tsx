@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { PasswordInput } from '@/components/ui/password-input';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -19,6 +20,7 @@ const Configuracoes = () => {
   const [colorLoading, setColorLoading] = useState(false);
   const [subdomainLoading, setSubdomainLoading] = useState(false);
   const [domainLoading, setDomainLoading] = useState(false);
+  const [footerLoading, setFooterLoading] = useState(false);
   
   // Mock user plan - in real app this would come from auth context
   const userPlan = 'Polvo'; // or 'Peixe', 'Golfinho', 'Tubarão'
@@ -38,6 +40,16 @@ const Configuracoes = () => {
     corDestaque: '#0152F8',
     subdominio: '',
     dominioCustomizado: ''
+  });
+
+  // Footer customization state
+  const [footerConfig, setFooterConfig] = useState({
+    showWebsite: false,
+    websiteUrl: '',
+    showWhatsApp: false,
+    whatsappNumber: '',
+    showEmail: false,
+    emailContact: ''
   });
 
   // Account settings state
@@ -338,6 +350,28 @@ const Configuracoes = () => {
     }
   };
 
+  const handleFooterSave = async () => {
+    setFooterLoading(true);
+    
+    try {
+      // Here you would save footer config to Supabase
+      console.log('Saving footer config:', footerConfig);
+      
+      toast({
+        title: "Configurações do rodapé salvas!",
+        description: "As alterações foram aplicadas com sucesso",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível salvar as configurações do rodapé",
+        variant: "destructive",
+      });
+    } finally {
+      setFooterLoading(false);
+    }
+  };
+
   const passwordValidation = validatePassword(accountSettings.newPassword);
 
   return (
@@ -577,6 +611,140 @@ const Configuracoes = () => {
             >
               Salvar tom de voz
             </Button>
+          </CardContent>
+        </Card>
+
+        {/* Footer Customization Section */}
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-white">Personalização do rodapé da página de rastreio</CardTitle>
+            <CardDescription>
+              Configure quais informações de contato aparecerão no rodapé da página pública
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Website Option */}
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="show-website"
+                  checked={footerConfig.showWebsite}
+                  onCheckedChange={(checked) => 
+                    setFooterConfig(prev => ({ 
+                      ...prev, 
+                      showWebsite: checked as boolean,
+                      websiteUrl: checked ? prev.websiteUrl : ''
+                    }))
+                  }
+                />
+                <Label htmlFor="show-website" className="text-white">
+                  Mostrar site da loja
+                </Label>
+              </div>
+              {footerConfig.showWebsite && (
+                <div className="ml-6 space-y-2">
+                  <Label htmlFor="website-url" className="text-white text-sm">
+                    URL do site
+                  </Label>
+                  <Input
+                    id="website-url"
+                    type="url"
+                    placeholder="https://minhaloja.com.br"
+                    value={footerConfig.websiteUrl}
+                    onChange={(e) => 
+                      setFooterConfig(prev => ({ ...prev, websiteUrl: e.target.value }))
+                    }
+                  />
+                </div>
+              )}
+            </div>
+
+            <Separator />
+
+            {/* WhatsApp Option */}
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="show-whatsapp"
+                  checked={footerConfig.showWhatsApp}
+                  onCheckedChange={(checked) => 
+                    setFooterConfig(prev => ({ 
+                      ...prev, 
+                      showWhatsApp: checked as boolean,
+                      whatsappNumber: checked ? prev.whatsappNumber : ''
+                    }))
+                  }
+                />
+                <Label htmlFor="show-whatsapp" className="text-white">
+                  Mostrar número de WhatsApp
+                </Label>
+              </div>
+              {footerConfig.showWhatsApp && (
+                <div className="ml-6 space-y-2">
+                  <Label htmlFor="whatsapp-number" className="text-white text-sm">
+                    Número do WhatsApp (com DDI)
+                  </Label>
+                  <Input
+                    id="whatsapp-number"
+                    type="tel"
+                    placeholder="+55 11 99999-9999"
+                    value={footerConfig.whatsappNumber}
+                    onChange={(e) => 
+                      setFooterConfig(prev => ({ ...prev, whatsappNumber: e.target.value }))
+                    }
+                  />
+                </div>
+              )}
+            </div>
+
+            <Separator />
+
+            {/* Email Option */}
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="show-email"
+                  checked={footerConfig.showEmail}
+                  onCheckedChange={(checked) => 
+                    setFooterConfig(prev => ({ 
+                      ...prev, 
+                      showEmail: checked as boolean,
+                      emailContact: checked ? prev.emailContact : ''
+                    }))
+                  }
+                />
+                <Label htmlFor="show-email" className="text-white">
+                  Mostrar e-mail de contato
+                </Label>
+              </div>
+              {footerConfig.showEmail && (
+                <div className="ml-6 space-y-2">
+                  <Label htmlFor="email-contact" className="text-white text-sm">
+                    E-mail de contato
+                  </Label>
+                  <Input
+                    id="email-contact"
+                    type="email"
+                    placeholder="contato@minhaloja.com.br"
+                    value={footerConfig.emailContact}
+                    onChange={(e) => 
+                      setFooterConfig(prev => ({ ...prev, emailContact: e.target.value }))
+                    }
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="pt-4">
+              <Button 
+                onClick={handleFooterSave}
+                disabled={footerLoading}
+                className="hover-button glow-button"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {footerLoading ? "Salvando..." : "Salvar configurações do rodapé"}
+              </Button>
+            </div>
           </CardContent>
         </Card>
 

@@ -44,7 +44,15 @@ const demoTrackingData = {
       }
     ],
     estimativa: '17 de Janeiro, 2024',
-    orderBump: []
+    orderBump: [],
+    footerConfig: {
+      showWebsite: true,
+      websiteUrl: 'https://lojaexemplo.com.br',
+      showWhatsApp: true,
+      whatsappNumber: '+55 11 99999-9999',
+      showEmail: false,
+      emailContact: ''
+    }
   },
   'BR987654321RJ': {
     codigo: 'BR987654321RJ',
@@ -94,7 +102,15 @@ const demoTrackingData = {
         titulo: 'Oferta Especial Para Você!',
         subtitulo: 'Complete seu look com nossa bolsa premium'
       }
-    ]
+    ],
+    footerConfig: {
+      showWebsite: false,
+      websiteUrl: '',
+      showWhatsApp: true,
+      whatsappNumber: '+55 21 98888-8888',
+      showEmail: true,
+      emailContact: 'contato@boutiquemaria.com.br'
+    }
   },
   'BR456789123MG': {
     codigo: 'BR456789123MG',
@@ -126,7 +142,15 @@ const demoTrackingData = {
       }
     ],
     estimativa: '20 de Janeiro, 2024',
-    orderBump: []
+    orderBump: [],
+    footerConfig: {
+      showWebsite: true,
+      websiteUrl: 'https://techstorebh.com.br',
+      showWhatsApp: false,
+      whatsappNumber: '',
+      showEmail: true,
+      emailContact: 'suporte@techstorebh.com.br'
+    }
   },
   'BR789123456PR': {
     codigo: 'BR789123456PR',
@@ -165,7 +189,15 @@ const demoTrackingData = {
       }
     ],
     estimativa: '14 de Janeiro, 2024',
-    orderBump: []
+    orderBump: [],
+    footerConfig: {
+      showWebsite: false,
+      websiteUrl: '',
+      showWhatsApp: false,
+      whatsappNumber: '',
+      showEmail: false,
+      emailContact: ''
+    }
   }
 };
 
@@ -207,7 +239,15 @@ const RastreamentoPublico = () => {
           }
         ],
         estimativa: '20 de Janeiro, 2024',
-        orderBump: []
+        orderBump: [],
+        footerConfig: {
+          showWebsite: false,
+          websiteUrl: '',
+          showWhatsApp: false,
+          whatsappNumber: '',
+          showEmail: false,
+          emailContact: ''
+        }
       };
     },
   });
@@ -221,10 +261,10 @@ const RastreamentoPublico = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="min-h-screen bg-white flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Carregando rastreamento...</p>
+          <div className="animate-spin h-8 w-8 border-2 border-black border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando rastreamento...</p>
         </div>
       </div>
     );
@@ -232,12 +272,12 @@ const RastreamentoPublico = () => {
 
   if (!rastreamento) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="w-full max-w-md glass-card">
+      <div className="min-h-screen bg-white flex items-center justify-center p-4">
+        <Card className="w-full max-w-md border border-gray-200 bg-white">
           <CardContent className="text-center py-12">
             <div className="text-6xl mb-4">❌</div>
-            <h2 className="text-xl font-semibold mb-2 text-white">Código não encontrado</h2>
-            <p className="text-muted-foreground">
+            <h2 className="text-xl font-semibold mb-2 text-gray-900">Código não encontrado</h2>
+            <p className="text-gray-600">
               O código de rastreamento informado não existe ou foi removido.
             </p>
           </CardContent>
@@ -247,9 +287,9 @@ const RastreamentoPublico = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm">
+      <header className="border-b border-gray-200 bg-white">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -261,18 +301,18 @@ const RastreamentoPublico = () => {
                 />
               ) : (
                 <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center">
                     <span className="text-white font-bold text-lg">R</span>
                   </div>
                   <div>
-                    <h1 className="text-lg font-bold text-white">{rastreamento?.loja || 'RastreieTrack'}</h1>
+                    <h1 className="text-lg font-bold text-gray-900">{rastreamento?.loja || 'RastreieTrack'}</h1>
                   </div>
                 </div>
               )}
             </div>
             <div className="text-right">
-              <h1 className="text-xl font-bold text-white">Rastreamento</h1>
-              <p className="text-sm text-muted-foreground">{rastreamento?.codigo}</p>
+              <h1 className="text-xl font-bold text-gray-900">Rastreamento</h1>
+              <p className="text-sm text-gray-600">{rastreamento?.codigo}</p>
             </div>
           </div>
         </div>
@@ -280,12 +320,12 @@ const RastreamentoPublico = () => {
 
       {/* Demo Badge */}
       {slug && demoTrackingData[slug as keyof typeof demoTrackingData] && (
-        <div className="bg-blue-500/20 border-b border-blue-500/30">
+        <div className="bg-blue-50 border-b border-blue-200">
           <div className="container mx-auto px-4 py-2">
             <div className="flex items-center justify-center gap-2 text-sm">
-              <span className="text-blue-400">💡</span>
-              <span className="text-blue-400 font-medium">Página de demonstração</span>
-              <span className="text-blue-300">- Visualização de como será a experiência do cliente</span>
+              <span className="text-blue-600">💡</span>
+              <span className="text-blue-600 font-medium">Página de demonstração</span>
+              <span className="text-blue-500">- Visualização de como será a experiência do cliente</span>
             </div>
           </div>
         </div>
@@ -293,21 +333,21 @@ const RastreamentoPublico = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <Card className="glass-card mb-6">
+        <Card className="border border-gray-200 bg-white mb-6">
           <CardContent className="p-6">
             {/* Progress Section */}
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold mb-2 text-white">
+              <h2 className="text-2xl font-bold mb-2 text-gray-900">
                 Olá, {rastreamento.cliente}! 👋
               </h2>
-              <p className="text-muted-foreground mb-6">
-                Seu pedido está a caminho e chegará até <strong className="text-white">{rastreamento.estimativa}</strong>
+              <p className="text-gray-600 mb-6">
+                Seu pedido está a caminho e chegará até <strong className="text-gray-900">{rastreamento.estimativa}</strong>
               </p>
               
               <div className="space-y-3">
                 <div className="flex justify-between text-sm">
-                  <span className="text-white">Progresso da entrega</span>
-                  <span className="font-semibold text-white">{rastreamento.progresso}%</span>
+                  <span className="text-gray-900">Progresso da entrega</span>
+                  <span className="font-semibold text-gray-900">{rastreamento.progresso}%</span>
                 </div>
                 <Progress value={rastreamento.progresso} className="h-4" />
               </div>
@@ -315,7 +355,7 @@ const RastreamentoPublico = () => {
 
             {/* Timeline */}
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold text-white">Acompanhe seu pedido:</h3>
+              <h3 className="text-lg font-semibold text-gray-900">Acompanhe seu pedido:</h3>
               
               <div className="space-y-4">
                 {rastreamento.eventos.map((evento, index) => (
@@ -323,12 +363,12 @@ const RastreamentoPublico = () => {
                     <div className="flex flex-col items-center">
                       <div className={`w-4 h-4 rounded-full border-2 ${
                         evento.concluido 
-                          ? 'bg-primary border-primary' 
-                          : 'border-muted bg-background'
+                          ? 'bg-black border-black' 
+                          : 'border-gray-300 bg-white'
                       }`}></div>
                       {index !== rastreamento.eventos.length - 1 && (
                         <div className={`w-px h-16 mt-2 ${
-                          evento.concluido ? 'bg-primary' : 'bg-border'
+                          evento.concluido ? 'bg-black' : 'bg-gray-200'
                         }`}></div>
                       )}
                     </div>
@@ -336,11 +376,11 @@ const RastreamentoPublico = () => {
                     <div className="flex-1 pb-8">
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
                         <p className={`font-medium ${
-                          evento.concluido ? 'text-white' : 'text-muted-foreground'
+                          evento.concluido ? 'text-gray-900' : 'text-gray-500'
                         }`}>
                           {evento.mensagem}
                         </p>
-                        <div className="text-xs text-muted-foreground sm:text-right">
+                        <div className="text-xs text-gray-500 sm:text-right">
                           <div>{new Date(evento.data).toLocaleDateString('pt-BR')}</div>
                           <div>{new Date(evento.data).toLocaleTimeString('pt-BR', { 
                             hour: '2-digit', 
@@ -348,7 +388,7 @@ const RastreamentoPublico = () => {
                           })}</div>
                         </div>
                       </div>
-                      <p className="text-sm text-muted-foreground">{evento.local}</p>
+                      <p className="text-sm text-gray-500">{evento.local}</p>
                     </div>
                   </div>
                 ))}
@@ -359,32 +399,32 @@ const RastreamentoPublico = () => {
 
         {/* OrderBump Section */}
         {rastreamento.orderBump && rastreamento.orderBump.length > 0 && (
-          <Card className="glass-card mb-6">
+          <Card className="border border-gray-200 bg-white mb-6">
             <CardContent className="p-6">
-              <h3 className="text-lg font-semibold text-white mb-4 text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">
                 {rastreamento.orderBump[0].titulo}
               </h3>
-              <p className="text-center text-muted-foreground mb-6">
+              <p className="text-center text-gray-600 mb-6">
                 {rastreamento.orderBump[0].subtitulo}
               </p>
               
               <div className="grid gap-4">
                 {rastreamento.orderBump.map((produto) => (
-                  <div key={produto.id} className="flex items-center gap-4 p-4 bg-muted/20 rounded-lg">
+                  <div key={produto.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
                     <img 
                       src={produto.imagem} 
                       alt={produto.nome}
                       className="w-16 h-16 object-cover rounded-lg"
                     />
                     <div className="flex-1">
-                      <h4 className="font-semibold text-white">{produto.nome}</h4>
+                      <h4 className="font-semibold text-gray-900">{produto.nome}</h4>
                       <div className="flex items-center gap-2">
                         {produto.precoPromocional && (
-                          <span className="text-sm text-muted-foreground line-through">
+                          <span className="text-sm text-gray-500 line-through">
                             R$ {produto.precoOriginal.toFixed(2)}
                           </span>
                         )}
-                        <span className="text-lg font-bold text-primary">
+                        <span className="text-lg font-bold text-black">
                           R$ {(produto.precoPromocional || produto.precoOriginal).toFixed(2)}
                         </span>
                       </div>
@@ -393,7 +433,7 @@ const RastreamentoPublico = () => {
                       href={produto.ctaLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
+                      className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
                     >
                       Comprar
                     </a>
@@ -405,13 +445,13 @@ const RastreamentoPublico = () => {
         )}
 
         {/* Info Card */}
-        <Card className="glass-card">
+        <Card className="border border-gray-200 bg-white">
           <CardContent className="p-4 text-center">
             <div className="flex items-center justify-center gap-3">
               <span className="text-2xl">💡</span>
               <div className="text-left">
-                <p className="font-medium text-white">Dúvidas sobre sua entrega?</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="font-medium text-gray-900">Dúvidas sobre sua entrega?</p>
+                <p className="text-sm text-gray-600">
                   Entre em contato conosco através do WhatsApp ou email de suporte.
                 </p>
               </div>
@@ -420,12 +460,56 @@ const RastreamentoPublico = () => {
         </Card>
       </main>
 
+      {/* Custom Footer */}
+      {rastreamento.footerConfig && (
+        rastreamento.footerConfig.showWebsite || 
+        rastreamento.footerConfig.showWhatsApp || 
+        rastreamento.footerConfig.showEmail
+      ) && (
+        <div className="border-t border-gray-200 mt-8 py-6 bg-gray-50">
+          <div className="container mx-auto px-4 text-center">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
+              {rastreamento.footerConfig.showWebsite && rastreamento.footerConfig.websiteUrl && (
+                <a 
+                  href={rastreamento.footerConfig.websiteUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-black hover:text-gray-600 font-medium"
+                >
+                  🌐 Visitar site
+                </a>
+              )}
+              
+              {rastreamento.footerConfig.showWhatsApp && rastreamento.footerConfig.whatsappNumber && (
+                <a 
+                  href={`https://wa.me/${rastreamento.footerConfig.whatsappNumber.replace(/\D/g, '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-black hover:text-gray-600 font-medium"
+                >
+                  📱 WhatsApp
+                </a>
+              )}
+              
+              {rastreamento.footerConfig.showEmail && rastreamento.footerConfig.emailContact && (
+                <a 
+                  href={`mailto:${rastreamento.footerConfig.emailContact}`}
+                  className="text-black hover:text-gray-600 font-medium"
+                >
+                  ✉️ E-mail
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Footer */}
-      <footer className="border-t border-border mt-12 py-6">
+      <footer className="border-t border-gray-200 mt-12 py-6 bg-white">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-gray-600">
             Rastreamento powered by{' '}
-            <span className="text-primary font-semibold">RastreieTrack</span>
+            <span className="text-black font-semibold">RastreieTrack</span>
           </p>
         </div>
       </footer>
