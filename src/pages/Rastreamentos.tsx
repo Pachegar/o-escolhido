@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
@@ -10,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { useTrackings, useDeleteTracking } from '@/hooks/useSupabaseData';
 import { useToast } from '@/hooks/use-toast';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Pencil } from 'lucide-react';
 
 // Dados fictícios para demonstração
 const demoTrackings = [
@@ -248,8 +247,13 @@ const Rastreamentos = () => {
                                 </Button>
                               </Link>
                               <Link to={`/rastreamentos/${item.id}/editar`}>
-                                <Button variant="outline" size="sm" className="hover-button">
-                                  ✏️
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  className="hover-button bg-blue-500/20 border-blue-500/50 text-blue-400 hover:bg-blue-500/30"
+                                  title="Editar mensagens"
+                                >
+                                  <Pencil className="h-3 w-3" />
                                 </Button>
                               </Link>
                             </>
