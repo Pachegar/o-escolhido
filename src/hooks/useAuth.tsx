@@ -46,18 +46,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     console.log('Attempting sign in for:', email);
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
     
-    if (error) {
-      console.error('Sign in error:', error);
-    } else {
-      console.log('Sign in successful');
-    }
+    // Bypass authentication - allow any email/password
+    const mockUser = {
+      id: 'demo-user-id',
+      email: email,
+      user_metadata: {},
+      app_metadata: {},
+      aud: 'authenticated',
+      created_at: new Date().toISOString(),
+    };
     
-    return { error };
+    const mockSession = {
+      access_token: 'demo-token',
+      token_type: 'bearer',
+      expires_in: 3600,
+      expires_at: Math.floor(Date.now() / 1000) + 3600,
+      refresh_token: 'demo-refresh',
+      user: mockUser,
+    };
+    
+    // Simulate successful login
+    setSession(mockSession as any);
+    setUser(mockUser as any);
+    console.log('Sign in successful (bypassed)');
+    
+    return { error: null };
   };
 
   const resetPassword = async (email: string) => {
